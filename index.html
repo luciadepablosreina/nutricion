@@ -8,7 +8,7 @@
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   // ====================================================
@@ -30,6 +30,13 @@
   const db = getFirestore(app);
   const provider = new GoogleAuthProvider();
 
+  // Manejar resultado de redirección (mobile)
+  getRedirectResult(auth).catch((e) => {
+    if (e && e.code !== 'auth/no-current-user') {
+      console.warn("Redirect result error:", e.message);
+    }
+  });
+
   let currentUserId = null;
   let firestoreUnsubscribe = null;
   let saveTimeout = null;
@@ -38,7 +45,12 @@
   window._fbAuth = auth;
   window._fbSignIn = async () => {
     try {
-      await signInWithPopup(auth, provider);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        await signInWithRedirect(auth, provider);
+      } else {
+        await signInWithPopup(auth, provider);
+      }
     } catch(e) {
       alert("Error al iniciar sesión: " + e.message);
     }
@@ -51,18 +63,17 @@
   };
 
   // Guardar en Firestore con debounce (300ms)
-  window._fbSave = (dataObj) => {
-    if (!currentUserId) return;
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(async () => {
-      try {
-        await setDoc(doc(db, "usuarios", currentUserId), dataObj, { merge: true });
-        updateSyncBadge("✅ Guardado en la nube", "rgba(200,245,210,0.85)");
-      } catch(e) {
-        updateSyncBadge("⚠️ Error al guardar: " + e.message, "rgba(255,180,100,0.8)");
-        console.error("Firestore save error:", e);
-      }
-    }, 300);
+  window._fbSave = async (dataObj) => {
+    if (!currentUserId) { console.warn("fbSave: no user logged in"); return; }
+    try {
+      console.log("fbSave: saving to Firestore for user", currentUserId);
+      await setDoc(doc(db, "usuarios", currentUserId), dataObj, { merge: true });
+      console.log("fbSave: saved OK");
+      updateSyncBadge("✅ Guardado en la nube", "rgba(200,245,210,0.85)");
+    } catch(e) {
+      console.error("fbSave error:", e);
+      updateSyncBadge("⚠️ Error al guardar: " + e.message, "rgba(255,180,100,0.8)");
+    }
   };
 
   function updateSyncBadge(text, color) {
@@ -4207,20 +4218,4 @@ renderDiary();
     <img class="photo-preview" id="photo-preview-img" src="" alt="Foto del plato">
     <div class="photo-upload-area" onclick="document.getElementById('photo-file-input').click()">
       <div style="font-size:32px;margin-bottom:8px;">📷</div>
-      <div>Tocá para elegir una foto</div>
-      <input type="file" id="photo-file-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event)">
-    </div>
-    <div class="photo-modal-btns" id="photo-modal-btns">
-      <button class="photo-modal-btn secondary" onclick="closePhotoModal()">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<div class="mic-toast" id="mic-toast">
-  <span>🎤</span><span class="mic-toast-msg">Escuchando...</span>
-</div>
-
-</div><!-- fin #app-main -->
-
-</body>
-</html>
+      <div>Tocá para elegir una fot
