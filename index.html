@@ -1579,13 +1579,13 @@ canvas { width: 100% !important; }
         <div id="items-Desayuno"></div>
         <div style="display:flex;gap:6px;padding:8px 4px;border-top:1px solid rgba(232,180,173,0.2);margin-top:4px;">
           <input id="af-name-Desayuno" type="text" placeholder="Agregar alimento..." autocomplete="off"
-            style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 10px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;"
-            onchange="if(this.value.trim())doAgregarAlimento('Desayuno')">
+            style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 10px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
           <input id="af-kcal-Desayuno" type="number" placeholder="kcal" inputmode="numeric"
             style="width:64px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
           <button type="button"
-            style="background:var(--bordo);color:white;border:none;border-radius:8px;padding:8px 14px;font-family:Nunito,sans-serif;font-size:13px;font-weight:700;cursor:pointer;min-width:44px;min-height:44px;"
-            onclick="doAgregarAlimento('Desayuno')">+</button>
+            ontouchstart="event.preventDefault();doAgregarAlimento('Desayuno')"
+            onclick="doAgregarAlimento('Desayuno')"
+            style="background:var(--bordo);color:white;border:none;border-radius:8px;padding:8px 14px;font-family:Nunito,sans-serif;font-weight:700;cursor:pointer;min-width:44px;min-height:44px;font-size:18px;-webkit-tap-highlight-color:transparent;">＋</button>
         </div>
       </div>
     </div>
@@ -1605,13 +1605,13 @@ canvas { width: 100% !important; }
         <div id="items-Almuerzo"></div>
         <div style="display:flex;gap:6px;padding:8px 4px;border-top:1px solid rgba(232,180,173,0.2);margin-top:4px;">
           <input id="af-name-Almuerzo" type="text" placeholder="Agregar alimento..." autocomplete="off"
-            style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 10px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;"
-            onchange="if(this.value.trim())doAgregarAlimento('Almuerzo')">
+            style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 10px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
           <input id="af-kcal-Almuerzo" type="number" placeholder="kcal" inputmode="numeric"
             style="width:64px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
           <button type="button"
-            style="background:var(--bordo);color:white;border:none;border-radius:8px;padding:8px 14px;font-family:Nunito,sans-serif;font-size:13px;font-weight:700;cursor:pointer;min-width:44px;min-height:44px;"
-            onclick="doAgregarAlimento('Almuerzo')">+</button>
+            ontouchstart="event.preventDefault();doAgregarAlimento('Almuerzo')"
+            onclick="doAgregarAlimento('Almuerzo')"
+            style="background:var(--bordo);color:white;border:none;border-radius:8px;padding:8px 14px;font-family:Nunito,sans-serif;font-weight:700;cursor:pointer;min-width:44px;min-height:44px;font-size:18px;-webkit-tap-highlight-color:transparent;">＋</button>
         </div>
       </div>
     </div>
@@ -1631,13 +1631,13 @@ canvas { width: 100% !important; }
         <div id="items-Merienda"></div>
         <div style="display:flex;gap:6px;padding:8px 4px;border-top:1px solid rgba(232,180,173,0.2);margin-top:4px;">
           <input id="af-name-Merienda" type="text" placeholder="Agregar alimento..." autocomplete="off"
-            style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 10px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;"
-            onchange="if(this.value.trim())doAgregarAlimento('Merienda')">
+            style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 10px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
           <input id="af-kcal-Merienda" type="number" placeholder="kcal" inputmode="numeric"
             style="width:64px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
           <button type="button"
-            style="background:var(--bordo);color:white;border:none;border-radius:8px;padding:8px 14px;font-family:Nunito,sans-serif;font-size:13px;font-weight:700;cursor:pointer;min-width:44px;min-height:44px;"
-            onclick="doAgregarAlimento('Merienda')">+</button>
+            ontouchstart="event.preventDefault();doAgregarAlimento('Merienda')"
+            onclick="doAgregarAlimento('Merienda')"
+            style="background:var(--bordo);color:white;border:none;border-radius:8px;padding:8px 14px;font-family:Nunito,sans-serif;font-weight:700;cursor:pointer;min-width:44px;min-height:44px;font-size:18px;-webkit-tap-highlight-color:transparent;">＋</button>
         </div>
       </div>
     </div>
@@ -1657,13 +1657,13 @@ canvas { width: 100% !important; }
         <div id="items-Cena"></div>
         <div style="display:flex;gap:6px;padding:8px 4px;border-top:1px solid rgba(232,180,173,0.2);margin-top:4px;">
           <input id="af-name-Cena" type="text" placeholder="Agregar alimento..." autocomplete="off"
-            style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 10px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;"
-            onchange="if(this.value.trim())doAgregarAlimento('Cena')">
+            style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 10px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
           <input id="af-kcal-Cena" type="number" placeholder="kcal" inputmode="numeric"
             style="width:64px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
           <button type="button"
-            style="background:var(--bordo);color:white;border:none;border-radius:8px;padding:8px 14px;font-family:Nunito,sans-serif;font-size:13px;font-weight:700;cursor:pointer;min-width:44px;min-height:44px;"
-            onclick="doAgregarAlimento('Cena')">+</button>
+            ontouchstart="event.preventDefault();doAgregarAlimento('Cena')"
+            onclick="doAgregarAlimento('Cena')"
+            style="background:var(--bordo);color:white;border:none;border-radius:8px;padding:8px 14px;font-family:Nunito,sans-serif;font-weight:700;cursor:pointer;min-width:44px;min-height:44px;font-size:18px;-webkit-tap-highlight-color:transparent;">＋</button>
         </div>
       </div>
     </div>
@@ -1683,13 +1683,13 @@ canvas { width: 100% !important; }
         <div id="items-Extras"></div>
         <div style="display:flex;gap:6px;padding:8px 4px;border-top:1px solid rgba(232,180,173,0.2);margin-top:4px;">
           <input id="af-name-Extras" type="text" placeholder="Agregar alimento..." autocomplete="off"
-            style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 10px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;"
-            onchange="if(this.value.trim())doAgregarAlimento('Extras')">
+            style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 10px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
           <input id="af-kcal-Extras" type="number" placeholder="kcal" inputmode="numeric"
             style="width:64px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:8px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
           <button type="button"
-            style="background:var(--bordo);color:white;border:none;border-radius:8px;padding:8px 14px;font-family:Nunito,sans-serif;font-size:13px;font-weight:700;cursor:pointer;min-width:44px;min-height:44px;"
-            onclick="doAgregarAlimento('Extras')">+</button>
+            ontouchstart="event.preventDefault();doAgregarAlimento('Extras')"
+            onclick="doAgregarAlimento('Extras')"
+            style="background:var(--bordo);color:white;border:none;border-radius:8px;padding:8px 14px;font-family:Nunito,sans-serif;font-weight:700;cursor:pointer;min-width:44px;min-height:44px;font-size:18px;-webkit-tap-highlight-color:transparent;">＋</button>
         </div>
       </div>
     </div>
@@ -4083,4 +4083,82 @@ renderDiary();
       <div style="font-size:32px;margin-bottom:8px;">📷</div>
       <div>Tocá para elegir una foto</div>
       <input type="file" id="photo-file-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event)">
-    </d
+    </div>
+    <div class="photo-modal-btns" id="photo-modal-btns">
+      <button class="photo-modal-btn secondary" onclick="closePhotoModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="mic-toast" id="mic-toast">
+  <span>🎤</span><span class="mic-toast-msg">Escuchando...</span>
+</div>
+
+
+
+
+
+<!-- FIREBASE SYNC -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyBDPhGg3OYBoP_mIr-7Ay9GEVllAB0L2Ys",
+    authDomain: "lu-new-e4af4.firebaseapp.com",
+    databaseURL: "https://lu-new-e4af4-default-rtdb.firebaseio.com",
+    projectId: "lu-new-e4af4",
+    storageBucket: "lu-new-e4af4.firebasestorage.app",
+    messagingSenderId: "532161561371",
+    appId: "1:532161561371:web:1549cf402bae27427d49be"
+  });
+
+  var fbDb  = firebase.database();
+  var fbRef = fbDb.ref('lucia');
+
+  // ID único para este dispositivo/sesión — evita que el listener reaccione a los propios cambios
+  var fbDeviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+  var fbLastSavedTs = 0;
+  var fbIgnoreNext = false;
+
+  function fbStatus(msg, color) {
+    var el = document.getElementById('sync-status');
+    if (el) { el.textContent = msg; el.style.color = color || 'rgba(200,245,210,0.9)'; }
+  }
+
+  // GUARDAR en Firebase
+  window.fbSave = function() {
+    var ts = Date.now();
+    fbLastSavedTs = ts;
+    fbIgnoreNext = true; // ignorar el próximo evento que llegue (es el nuestro)
+    localStorage.setItem('fb_ts', ts);
+
+    fbRef.set({
+      ts:        ts,
+      deviceId:  fbDeviceId,
+      diary:     JSON.parse(localStorage.getItem('nutricion_diary')       || '{}'),
+      activity:  JSON.parse(localStorage.getItem('nutricion_activity')    || '{}'),
+      peso:      JSON.parse(localStorage.getItem('nutricion_peso')        || '{}'),
+      ejercicio: JSON.parse(localStorage.getItem('nutricion_ejercicio')   || '[]'),
+      comp:      JSON.parse(localStorage.getItem('nutricion_composicion') || 'null'),
+      tabla:     JSON.parse(localStorage.getItem('nutricion_tabla')       || '[]'),
+      deleted:   JSON.parse(localStorage.getItem('deletedRecetas')        || '[]'),
+    }).then(function() {
+      fbStatus('☁️ ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+    }).catch(function() {
+      fbStatus('⚠️ Sin conexión', 'rgba(255,180,80,0.9)');
+    });
+  };
+
+  // Hook saveAll para que llame fbSave automáticamente
+  var _origSaveAll = saveAll;
+  saveAll = function() {
+    _origSaveAll();
+    window.fbSave();
+  };
+
+  // ESCUCHAR cambios de OTROS dispositivos
+  fbRef.on('value', function(snap) {
+    var d = snap.val();
+    if (!d || !d.ts) { fbStatus('☁️ Listo'); return; }
+
+    // Si fue este mismo dispositivo quien guardó, i
