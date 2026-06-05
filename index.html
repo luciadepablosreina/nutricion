@@ -1577,6 +1577,12 @@ canvas { width: 100% !important; }
       <div class="meal-body" id="body-Desayuno">
         <div class="drop-zone" id="drop-Desayuno">arrastrá aquí</div>
         <div id="items-Desayuno"></div>
+        <div class="add-food-form" id="form-Desayuno" style="display:none;">
+          <input class="add-food-name-input" id="af-name-Desayuno" type="text" placeholder="Nombre del alimento..." autocomplete="off">
+          <input class="add-food-kcal-input" id="af-kcal-Desayuno" type="number" placeholder="kcal" min="0" inputmode="numeric">
+          <button class="add-food-ok-btn" type="button" id="af-btn-Desayuno" onclick="doAgregarAlimento('Desayuno')">+ Agregar</button>
+          <button class="add-food-cancel-btn" type="button" id="af-cancel-Desayuno" onclick="doCancelarAlimento('Desayuno')">✕</button>
+        </div>
       </div>
     </div>
 
@@ -1593,6 +1599,12 @@ canvas { width: 100% !important; }
       <div class="meal-body" id="body-Almuerzo">
         <div class="drop-zone" id="drop-Almuerzo">arrastrá aquí</div>
         <div id="items-Almuerzo"></div>
+        <div class="add-food-form" id="form-Almuerzo" style="display:none;">
+          <input class="add-food-name-input" id="af-name-Almuerzo" type="text" placeholder="Nombre del alimento..." autocomplete="off">
+          <input class="add-food-kcal-input" id="af-kcal-Almuerzo" type="number" placeholder="kcal" min="0" inputmode="numeric">
+          <button class="add-food-ok-btn" type="button" id="af-btn-Almuerzo" onclick="doAgregarAlimento('Almuerzo')">+ Agregar</button>
+          <button class="add-food-cancel-btn" type="button" id="af-cancel-Almuerzo" onclick="doCancelarAlimento('Almuerzo')">✕</button>
+        </div>
       </div>
     </div>
 
@@ -1609,6 +1621,12 @@ canvas { width: 100% !important; }
       <div class="meal-body" id="body-Merienda">
         <div class="drop-zone" id="drop-Merienda">arrastrá aquí</div>
         <div id="items-Merienda"></div>
+        <div class="add-food-form" id="form-Merienda" style="display:none;">
+          <input class="add-food-name-input" id="af-name-Merienda" type="text" placeholder="Nombre del alimento..." autocomplete="off">
+          <input class="add-food-kcal-input" id="af-kcal-Merienda" type="number" placeholder="kcal" min="0" inputmode="numeric">
+          <button class="add-food-ok-btn" type="button" id="af-btn-Merienda" onclick="doAgregarAlimento('Merienda')">+ Agregar</button>
+          <button class="add-food-cancel-btn" type="button" id="af-cancel-Merienda" onclick="doCancelarAlimento('Merienda')">✕</button>
+        </div>
       </div>
     </div>
 
@@ -1625,6 +1643,12 @@ canvas { width: 100% !important; }
       <div class="meal-body" id="body-Cena">
         <div class="drop-zone" id="drop-Cena">arrastrá aquí</div>
         <div id="items-Cena"></div>
+        <div class="add-food-form" id="form-Cena" style="display:none;">
+          <input class="add-food-name-input" id="af-name-Cena" type="text" placeholder="Nombre del alimento..." autocomplete="off">
+          <input class="add-food-kcal-input" id="af-kcal-Cena" type="number" placeholder="kcal" min="0" inputmode="numeric">
+          <button class="add-food-ok-btn" type="button" id="af-btn-Cena" onclick="doAgregarAlimento('Cena')">+ Agregar</button>
+          <button class="add-food-cancel-btn" type="button" id="af-cancel-Cena" onclick="doCancelarAlimento('Cena')">✕</button>
+        </div>
       </div>
     </div>
 
@@ -1641,6 +1665,12 @@ canvas { width: 100% !important; }
       <div class="meal-body" id="body-Extras">
         <div class="drop-zone" id="drop-Extras">arrastrá aquí</div>
         <div id="items-Extras"></div>
+        <div class="add-food-form" id="form-Extras" style="display:none;">
+          <input class="add-food-name-input" id="af-name-Extras" type="text" placeholder="Nombre del alimento..." autocomplete="off">
+          <input class="add-food-kcal-input" id="af-kcal-Extras" type="number" placeholder="kcal" min="0" inputmode="numeric">
+          <button class="add-food-ok-btn" type="button" id="af-btn-Extras" onclick="doAgregarAlimento('Extras')">+ Agregar</button>
+          <button class="add-food-cancel-btn" type="button" id="af-cancel-Extras" onclick="doCancelarAlimento('Extras')">✕</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1933,68 +1963,54 @@ function editFoodKcal(meal, idx, val) {
   renderDiary();
 }
 function addFoodManual(meal) {
-  var body = document.getElementById('body-' + meal);
-  if (!body) return;
-  var existing = body.querySelector('.add-food-form');
-  if (existing) { existing.remove(); return; }
-
-  var form = document.createElement('div');
-  form.className = 'add-food-form';
-
-  var nameInput = document.createElement('input');
-  nameInput.className = 'add-food-name-input';
-  nameInput.type = 'text';
-  nameInput.placeholder = 'Nombre del alimento...';
-
-  var kcalInput = document.createElement('input');
-  kcalInput.className = 'add-food-kcal-input';
-  kcalInput.type = 'number';
-  kcalInput.placeholder = 'kcal';
-  kcalInput.min = '0';
-
-  var addBtn = document.createElement('button');
-  addBtn.className = 'add-food-ok-btn';
-  addBtn.type = 'button';
-  addBtn.textContent = '+ Agregar';
-
-  var cancelBtn = document.createElement('button');
-  cancelBtn.className = 'add-food-cancel-btn';
-  cancelBtn.type = 'button';
-  cancelBtn.textContent = 'x';
-
-  function agregar() {
-    var name = nameInput.value.trim();
-    if (!name) { nameInput.focus(); return; }
-    var kcal = parseInt(kcalInput.value) || 0;
-    var fromTabla = getKcalFromTabla(name);
-    if (fromTabla !== null) kcal = fromTabla;
-    var day = getDayData(currentDateStr);
-    if (!day[meal]) day[meal] = [];
-    day[meal].push({ name: name, kcal: kcal });
-    form.remove();
-    saveAll();
-    renderDiary();
+  var form = document.getElementById('form-' + meal);
+  if (!form) return;
+  if (form.style.display !== 'none' && form.style.display !== '') {
+    form.style.display = 'none';
+    return;
   }
-
-  addBtn.onclick = agregar;
-  cancelBtn.onclick = function() { form.remove(); };
-  nameInput.onkeydown = function(e) { if (e.key === 'Enter') agregar(); };
-
-  form.appendChild(nameInput);
-  form.appendChild(kcalInput);
-  form.appendChild(addBtn);
-  form.appendChild(cancelBtn);
-
-  body.classList.add('open');
+  // Clear and show
+  var nameEl = document.getElementById('af-name-' + meal);
+  var kcalEl = document.getElementById('af-kcal-' + meal);
+  if (nameEl) nameEl.value = '';
+  if (kcalEl) kcalEl.value = '';
+  form.style.display = 'flex';
+  // Open the meal section
+  var body = document.getElementById('body-' + meal);
+  if (body) body.classList.add('open');
   var tog = document.getElementById('toggle-' + meal);
   if (tog) tog.classList.add('open');
-  body.appendChild(form);
-  setTimeout(function() { nameInput.focus(); }, 50);
+  setTimeout(function() { if (nameEl) nameEl.focus(); }, 100);
 }
+
+function doAgregarAlimento(meal) {
+  var nameEl = document.getElementById('af-name-' + meal);
+  var kcalEl = document.getElementById('af-kcal-' + meal);
+  var form   = document.getElementById('form-' + meal);
+  if (!nameEl) return;
+  var name = nameEl.value.trim();
+  if (!name) { nameEl.focus(); return; }
+  var kcal = parseInt(kcalEl ? kcalEl.value : '0') || 0;
+  var fromTabla = getKcalFromTabla(name);
+  if (fromTabla !== null) kcal = fromTabla;
+  var day = getDayData(currentDateStr);
+  if (!day[meal]) day[meal] = [];
+  day[meal].push({ name: name, kcal: kcal });
+  if (form) form.style.display = 'none';
+  saveAll();
+  renderDiary();
+}
+
+function doCancelarAlimento(meal) {
+  var form = document.getElementById('form-' + meal);
+  if (form) form.style.display = 'none';
+}
+
 
 function deleteFood(meal, idx) {
   const day = getDayData(currentDateStr);
   day[meal].splice(idx, 1);
+  saveAll();
   renderDiary();
 }
 
@@ -4066,8 +4082,7 @@ renderDiary();
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-  // Config
-  var fbApp = firebase.initializeApp({
+  firebase.initializeApp({
     apiKey: "AIzaSyBDPhGg3OYBoP_mIr-7Ay9GEVllAB0L2Ys",
     authDomain: "lu-new-e4af4.firebaseapp.com",
     databaseURL: "https://lu-new-e4af4-default-rtdb.firebaseio.com",
@@ -4076,89 +4091,101 @@ renderDiary();
     messagingSenderId: "532161561371",
     appId: "1:532161561371:web:1549cf402bae27427d49be"
   });
+
   var fbDb  = firebase.database();
   var fbRef = fbDb.ref('lucia');
-  var fbGuardando = false;
+
+  // ID único para este dispositivo/sesión — evita que el listener reaccione a los propios cambios
+  var fbDeviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+  var fbLastSavedTs = 0;
+  var fbIgnoreNext = false;
 
   function fbStatus(msg, color) {
     var el = document.getElementById('sync-status');
     if (el) { el.textContent = msg; el.style.color = color || 'rgba(200,245,210,0.9)'; }
   }
 
-  // SUBIR datos a Firebase
-  function fbSave() {
-    if (fbGuardando) return;
-    fbGuardando = true;
+  // GUARDAR en Firebase
+  window.fbSave = function() {
     var ts = Date.now();
+    fbLastSavedTs = ts;
+    fbIgnoreNext = true; // ignorar el próximo evento que llegue (es el nuestro)
     localStorage.setItem('fb_ts', ts);
-    fbRef.set({
-      ts: ts,
-      diary:    JSON.parse(localStorage.getItem('nutricion_diary')    || '{}'),
-      activity: JSON.parse(localStorage.getItem('nutricion_activity') || '{}'),
-      peso:     JSON.parse(localStorage.getItem('nutricion_peso')     || '{}'),
-      ejercicio:JSON.parse(localStorage.getItem('nutricion_ejercicio')|| '[]'),
-      comp:     JSON.parse(localStorage.getItem('nutricion_composicion') || 'null'),
-      tabla:    JSON.parse(localStorage.getItem('nutricion_tabla')    || '[]'),
-      deleted:  JSON.parse(localStorage.getItem('deletedRecetas')     || '[]'),
-    }).then(function() {
-      fbGuardando = false;
-      fbStatus('☁️ ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
-    }).catch(function(e) {
-      fbGuardando = false;
-      fbStatus('⚠️ Sin conexión', 'rgba(255,180,80,0.9)');
-      console.error('Firebase write error:', e);
-    });
-  }
 
-  // Hook: llamar fbSave() después de cada saveAll()
+    fbRef.set({
+      ts:        ts,
+      deviceId:  fbDeviceId,
+      diary:     JSON.parse(localStorage.getItem('nutricion_diary')       || '{}'),
+      activity:  JSON.parse(localStorage.getItem('nutricion_activity')    || '{}'),
+      peso:      JSON.parse(localStorage.getItem('nutricion_peso')        || '{}'),
+      ejercicio: JSON.parse(localStorage.getItem('nutricion_ejercicio')   || '[]'),
+      comp:      JSON.parse(localStorage.getItem('nutricion_composicion') || 'null'),
+      tabla:     JSON.parse(localStorage.getItem('nutricion_tabla')       || '[]'),
+      deleted:   JSON.parse(localStorage.getItem('deletedRecetas')        || '[]'),
+    }).then(function() {
+      fbStatus('☁️ ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+    }).catch(function() {
+      fbStatus('⚠️ Sin conexión', 'rgba(255,180,80,0.9)');
+    });
+  };
+
+  // Hook saveAll para que llame fbSave automáticamente
   var _origSaveAll = saveAll;
   saveAll = function() {
     _origSaveAll();
-    fbSave();
+    window.fbSave();
   };
 
-  // ESCUCHAR cambios en tiempo real
+  // ESCUCHAR cambios de OTROS dispositivos
   fbRef.on('value', function(snap) {
     var d = snap.val();
-    if (!d) { fbStatus('☁️ Listo'); return; }
+    if (!d || !d.ts) { fbStatus('☁️ Listo'); return; }
+
+    // Si fue este mismo dispositivo quien guardó, ignorar
+    if (d.deviceId === fbDeviceId) {
+      fbIgnoreNext = false;
+      fbStatus('☁️ Guardado');
+      return;
+    }
 
     var localTs = parseInt(localStorage.getItem('fb_ts') || '0');
-    if (d.ts <= localTs) { fbStatus('☁️ Al día'); return; }
 
-    // Datos nuevos desde otro dispositivo — aplicar
-    fbGuardando = true;
+    // Solo aplicar si la nube tiene datos más nuevos que los nuestros
+    if (d.ts <= localTs) {
+      fbStatus('☁️ Al día');
+      return;
+    }
+
+    // Aplicar datos del otro dispositivo
     localStorage.setItem('fb_ts', d.ts);
 
     if (d.diary)    { diaryData     = d.diary;    localStorage.setItem('nutricion_diary',         JSON.stringify(d.diary)); }
     if (d.activity) { activityData  = d.activity; localStorage.setItem('nutricion_activity',      JSON.stringify(d.activity)); }
-    if (d.peso)     { pesoData      = d.peso;      localStorage.setItem('nutricion_peso',          JSON.stringify(d.peso)); }
-    if (d.ejercicio){ ejercicioData = d.ejercicio; localStorage.setItem('nutricion_ejercicio',     JSON.stringify(d.ejercicio)); }
-    if (d.comp)     { compData      = d.comp;      localStorage.setItem('nutricion_composicion',   JSON.stringify(d.comp)); }
-    if (d.tabla)    { tablaData     = d.tabla;     localStorage.setItem('nutricion_tabla',         JSON.stringify(d.tabla)); }
+    if (d.peso)     { pesoData      = d.peso;      localStorage.setItem('nutricion_peso',         JSON.stringify(d.peso)); }
+    if (d.ejercicio){ ejercicioData = d.ejercicio; localStorage.setItem('nutricion_ejercicio',    JSON.stringify(d.ejercicio)); }
+    if (d.comp)     { compData      = d.comp;      localStorage.setItem('nutricion_composicion',  JSON.stringify(d.comp)); }
+    if (d.tabla)    { tablaData     = d.tabla;     localStorage.setItem('nutricion_tabla',        JSON.stringify(d.tabla)); }
     if (d.deleted)  { deletedRecetas = new Set(d.deleted); localStorage.setItem('deletedRecetas', JSON.stringify(d.deleted)); }
 
-    fbGuardando = false;
-    fbStatus('🔄 Actualizando...', 'rgba(245,221,216,0.8)');
+    fbStatus('🔄 Sincronizando...', 'rgba(245,221,216,0.8)');
 
-    // Re-renderizar tab activo
     setTimeout(function() {
-      var active = document.querySelector('.tab-content[style*="block"]');
-      if (!active) { fbStatus('☁️ Sincronizado ✓'); return; }
-      var t = active.id.replace('tab-','');
       try {
-        if (t === 'diario')      renderDiary();
-        if (t === 'pesaje')      renderPesaje();
-        if (t === 'composicion') renderCompTable();
-        if (t === 'recetas')     renderRecetas();
-        if (t === 'ejercicio')   renderEjercicio();
-        if (t === 'tabla')       renderTabla();
+        var active = document.querySelector('.tab-content[style*="block"]');
+        if (!active) { fbStatus('☁️ Sincronizado ✓'); return; }
+        var t = active.id.replace('tab-','');
+        if (t==='diario')      renderDiary();
+        if (t==='pesaje')      renderPesaje();
+        if (t==='composicion') renderCompTable();
+        if (t==='recetas')     renderRecetas();
+        if (t==='ejercicio')   renderEjercicio();
+        if (t==='tabla')       renderTabla();
+        fbStatus('☁️ Sincronizado ✓');
       } catch(e) { console.warn(e); }
-      fbStatus('☁️ Sincronizado ✓');
     }, 200);
 
   }, function(err) {
-    fbStatus('⚠️ Error: ' + err.code, 'rgba(255,120,80,0.9)');
-    console.error('Firebase listen error:', err);
+    fbStatus('⚠️ ' + err.code, 'rgba(255,120,80,0.9)');
   });
 
   fbStatus('⏳ Conectando...', 'rgba(245,221,216,0.5)');
