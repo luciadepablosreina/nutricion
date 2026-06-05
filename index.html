@@ -5,127 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plan de Nutrición</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  // ====================================================
-  // 🔧 CONFIGURACIÓN FIREBASE — Reemplazá con tus datos
-  // (los obtenés al crear el proyecto en firebase.google.com)
-  // ====================================================
-  const firebaseConfig = {
-    apiKey: "AIzaSyBtdheSEaCpehsMjPUMiPsSWlHiyX4n5Rk",
-    authDomain: "nutricion-lucia.firebaseapp.com",
-    projectId: "nutricion-lucia",
-    storageBucket: "nutricion-lucia.firebasestorage.app",
-    messagingSenderId: "826631673054",
-    appId: "1:826631673054:web:491d540a57787155231e4f",
-    measurementId: "G-RTVGN6YFS7"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const provider = new GoogleAuthProvider();
-
-  // Manejar resultado de redirección (mobile)
-  getRedirectResult(auth).catch((e) => {
-    if (e && e.code !== 'auth/no-current-user') {
-      console.warn("Redirect result error:", e.message);
-    }
-  });
-
-  let currentUserId = null;
-  let firestoreUnsubscribe = null;
-  let saveTimeout = null;
-
-  // Exponer funciones al scope global
-  window._fbAuth = auth;
-  window._fbSignIn = async () => {
-    try {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      if (isMobile) {
-        await signInWithRedirect(auth, provider);
-      } else {
-        await signInWithPopup(auth, provider);
-      }
-    } catch(e) {
-      alert("Error al iniciar sesión: " + e.message);
-    }
-  };
-  window._fbSignOut = async () => {
-    if (firestoreUnsubscribe) firestoreUnsubscribe();
-    await signOut(auth);
-    currentUserId = null;
-    showLoginScreen();
-  };
-
-  // Guardar en Firestore con debounce (300ms)
-  window._fbSave = async (dataObj) => {
-    if (!currentUserId) { console.warn("fbSave: no user logged in"); return; }
-    try {
-      console.log("fbSave: saving to Firestore for user", currentUserId);
-      await setDoc(doc(db, "usuarios", currentUserId), dataObj, { merge: true });
-      console.log("fbSave: saved OK");
-      updateSyncBadge("✅ Guardado en la nube", "rgba(200,245,210,0.85)");
-    } catch(e) {
-      console.error("fbSave error:", e);
-      updateSyncBadge("⚠️ Error al guardar: " + e.message, "rgba(255,180,100,0.8)");
-    }
-  };
-
-  function updateSyncBadge(text, color) {
-    const el = document.getElementById("sync-indicator");
-    if (el) { el.textContent = text; el.style.color = color; }
-  }
-
-  function showLoginScreen() {
-    document.getElementById("login-overlay").style.display = "flex";
-    document.getElementById("app-main").style.display = "none";
-  }
-
-  function hideLoginScreen() {
-    document.getElementById("login-overlay").style.display = "none";
-    document.getElementById("app-main").style.display = "block";
-  }
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      currentUserId = user.uid;
-      hideLoginScreen();
-      updateSyncBadge("⏳ Cargando datos...", "rgba(245,221,216,0.6)");
-
-      // Escuchar cambios en tiempo real
-      if (firestoreUnsubscribe) firestoreUnsubscribe();
-      firestoreUnsubscribe = onSnapshot(doc(db, "usuarios", currentUserId), (snap) => {
-        if (snap.exists()) {
-          const data = snap.data();
-          // Actualizar variables globales sin sobrescribir con vacío
-          if (data.diaryData)    { window.diaryData    = data.diaryData;    try { localStorage.setItem('nutricion_diary', JSON.stringify(data.diaryData)); } catch(e){} }
-          if (data.activityData) { window.activityData = data.activityData; try { localStorage.setItem('nutricion_activity', JSON.stringify(data.activityData)); } catch(e){} }
-          if (data.pesoData)     { window.pesoData     = data.pesoData;     try { localStorage.setItem('nutricion_peso', JSON.stringify(data.pesoData)); } catch(e){} }
-          if (data.ejercicioData){ window.ejercicioData= data.ejercicioData;try { localStorage.setItem('nutricion_ejercicio', JSON.stringify(data.ejercicioData)); } catch(e){} }
-          if (data.compData)     { window.compData     = data.compData;     try { localStorage.setItem('nutricion_composicion', JSON.stringify(data.compData)); } catch(e){} }
-          if (data.tablaData)    { window.tablaData    = data.tablaData;    try { localStorage.setItem('nutricion_tabla', JSON.stringify(data.tablaData)); } catch(e){} }
-          if (data.deletedRecetas) { window.deletedRecetas = new Set(data.deletedRecetas); try { localStorage.setItem('deletedRecetas', JSON.stringify(data.deletedRecetas)); } catch(e){} }
-          // Re-render current view
-          if (typeof renderDiary === 'function') renderDiary();
-        }
-        updateSyncBadge("✅ Sincronizado", "rgba(200,245,210,0.85)");
-      });
-
-      // Mostrar nombre de usuario
-      const nameEl = document.getElementById("user-name-display");
-      if (nameEl) nameEl.textContent = user.displayName || user.email;
-
-    } else {
-      currentUserId = null;
-      showLoginScreen();
-    }
-  });
-</script>
 <style>
 :root {
   --cream: #fef9f6;
@@ -1533,54 +1412,17 @@ canvas { width: 100% !important; }
 </head>
 <body>
 
-<!-- ===== PANTALLA DE LOGIN ===== -->
-<div id="login-overlay" style="
-  display:flex; position:fixed; inset:0; z-index:9999;
-  background:linear-gradient(135deg, var(--bordo-oscuro) 0%, var(--bordo) 60%, var(--rosa-medio) 100%);
-  align-items:center; justify-content:center; flex-direction:column; gap:24px; padding:24px;">
-  <div style="text-align:center;">
-    <div style="font-family:'Playfair Display',serif;font-size:32px;font-style:italic;color:var(--rosa-palido);margin-bottom:8px;">Plan de <span style="color:var(--rosa);">Nutrición</span></div>
-    <div style="font-size:14px;color:rgba(245,221,216,0.7);font-family:Nunito,sans-serif;">Lucía de Pablos Reina</div>
-  </div>
-  <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(245,221,216,0.25);border-radius:20px;padding:32px 28px;max-width:340px;width:100%;text-align:center;backdrop-filter:blur(4px);">
-    <div style="font-size:48px;margin-bottom:16px;">🔒</div>
-    <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--rosa-palido);margin-bottom:8px;">Acceso privado</div>
-    <div style="font-size:13px;color:rgba(245,221,216,0.7);font-family:Nunito,sans-serif;margin-bottom:24px;line-height:1.6;">Iniciá sesión con tu cuenta de Google para acceder y sincronizar tus datos en todos tus dispositivos.</div>
-    <button onclick="window._fbSignIn && window._fbSignIn()" style="
-      background:white; color:#333; border:none; padding:14px 24px; border-radius:12px;
-      cursor:pointer; font-family:Nunito,sans-serif; font-size:14px; font-weight:700;
-      display:flex; align-items:center; gap:10px; width:100%; justify-content:center;
-      transition:all 0.2s; box-shadow:0 4px 16px rgba(0,0,0,0.2);"
-      onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)'"
-      onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.2)'">
-      <img src="https://www.google.com/favicon.ico" width="18" height="18" alt="Google">
-      Iniciar sesión con Google
-    </button>
-  </div>
-  <div style="font-size:11px;color:rgba(245,221,216,0.4);font-family:Nunito,sans-serif;text-align:center;max-width:300px;line-height:1.6;">
-    Solo vos podés acceder a tus datos. Cada cambio se sincroniza automáticamente.
-  </div>
+<div class="app-header">
+  <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
+  <div class="app-title" style="margin-bottom:0;">Plan de <span>Nutrición</span> · <span style="font-size:18px;font-weight:400;font-style:italic;opacity:0.85;">Lucía de Pablos Reina</span></div>
+  <span id="sync-status" style="font-size:11px;color:rgba(245,221,216,0.5);font-family:Nunito,sans-serif;font-style:italic;">⏳ Conectando...</span>
 </div>
 
-<!-- ===== APP PRINCIPAL ===== -->
-<div id="app-main" style="display:none;">
-<div class="app-header">
-  <div class="app-title">Plan de <span>Nutrición</span> · <span style="font-size:18px;font-weight:400;font-style:italic;opacity:0.85;">Lucía de Pablos Reina</span></div>
 
-  <!-- BARRA DE SINCRONIZACIÓN -->
-  <div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 16px;flex-wrap:wrap;">
-    <span id="sync-indicator" style="font-size:11px;color:rgba(245,221,216,0.6);font-family:Nunito,sans-serif;font-style:italic;"></span>
-    <span id="user-name-display" style="font-size:11px;color:rgba(245,221,216,0.5);font-family:Nunito,sans-serif;font-style:italic;"></span>
-    <button onclick="exportarDatos()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(245,221,216,0.3);color:var(--rosa-palido);padding:5px 14px;border-radius:20px;cursor:pointer;font-family:Nunito,sans-serif;font-size:11px;font-weight:700;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">📤 Exportar</button>
-    <button onclick="document.getElementById('import-input').click()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(245,221,216,0.3);color:var(--rosa-palido);padding:5px 14px;border-radius:20px;cursor:pointer;font-family:Nunito,sans-serif;font-size:11px;font-weight:700;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">📥 Importar</button>
-    <button onclick="window._fbSignOut && window._fbSignOut()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(245,221,216,0.2);color:rgba(245,221,216,0.55);padding:5px 12px;border-radius:20px;cursor:pointer;font-family:Nunito,sans-serif;font-size:11px;font-weight:600;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.16)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">🚪 Salir</button>
-    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importarDatos(event)">
-  </div>
 
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('plan',this)">🌿 Plan</button>
     <button class="tab-btn" onclick="showTab('diario',this)">📓 Diario</button>
-    <button class="tab-btn" onclick="showTab('historial',this)">📋 Historial</button>
     <button class="tab-btn" onclick="showTab('pesaje',this)">⚖️ Pesaje</button>
     <button class="tab-btn" onclick="showTab('composicion',this)">📊 Composición</button>
     <button class="tab-btn" onclick="showTab('recetas',this)">🍽 Recetas</button>
@@ -1832,26 +1674,6 @@ canvas { width: 100% !important; }
 
 
 </div>
-<!-- TAB 3: HISTORIAL -->
-<div id="tab-historial" class="tab-content">
-  <div class="card">
-    <div class="card-title">📋 Historial de Alimentación</div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <p style="font-size:13px;color:var(--texto-suave);margin:0;">Tocá un día para editar el detalle.</p>
-      <button class="comp-action-btn" onclick="histAddDay()" style="margin:0;">＋ Agregar día</button>
-    </div>
-    <div id="historial-lista">
-      <div style="text-align:center;padding:40px 20px;">
-        <div style="font-size:48px;margin-bottom:16px;">📓</div>
-        <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--bordo);margin-bottom:8px;">Tu historial está en blanco</div>
-        <div style="font-size:13px;color:var(--texto-suave);line-height:1.7;max-width:280px;margin:0 auto;">
-          A medida que vayas registrando tu alimentación en el <strong>Diario</strong>, los días van a aparecer acá automáticamente.<br><br>
-          También podés importar días anteriores desde el PDF de tu nutricionista.
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- TAB 4: PESAJE -->
 <div id="tab-pesaje" class="tab-content">
@@ -1912,7 +1734,7 @@ canvas { width: 100% !important; }
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+ src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 // ===== STATE =====
 let currentDateStr = getTodayStr();
@@ -1969,7 +1791,6 @@ function showTab(t, btn) {
   if (btn) btn.classList.add('active');
   // Render content
   if (t === 'diario')      renderDiary();
-  if (t === 'historial')   renderHistorial();
   if (t === 'pesaje')      renderPesaje();
   if (t === 'composicion') renderCompTable();
   if (t === 'recetas')     renderRecetas();
@@ -2112,40 +1933,65 @@ function editFoodKcal(meal, idx, val) {
   renderDiary();
 }
 function addFoodManual(meal) {
-  // Show inline add form inside the meal body
-  const body = document.getElementById('body-' + meal);
+  var body = document.getElementById('body-' + meal);
   if (!body) return;
-  // Remove existing add form if any
   var existing = body.querySelector('.add-food-form');
   if (existing) { existing.remove(); return; }
 
   var form = document.createElement('div');
   form.className = 'add-food-form';
-  form.innerHTML =
-    '<input class="add-food-name-input" id="af-name-' + meal + '" type="text" placeholder="Nombre del alimento..." autocomplete="off" onkeypress="if(event.key===\'Enter\')confirmAddFood(\'' + meal + '\')" >' +
-    '<input class="add-food-kcal-input" id="af-kcal-' + meal + '" type="number" placeholder="kcal" min="0">' +
-    '<button class="add-food-ok-btn" onclick="confirmAddFood(\'' + meal + '\')">＋ Agregar</button>' +
-    '<button class="add-food-cancel-btn" onclick="this.parentElement.remove()">✕</button>';
+
+  var nameInput = document.createElement('input');
+  nameInput.className = 'add-food-name-input';
+  nameInput.type = 'text';
+  nameInput.placeholder = 'Nombre del alimento...';
+
+  var kcalInput = document.createElement('input');
+  kcalInput.className = 'add-food-kcal-input';
+  kcalInput.type = 'number';
+  kcalInput.placeholder = 'kcal';
+  kcalInput.min = '0';
+
+  var addBtn = document.createElement('button');
+  addBtn.className = 'add-food-ok-btn';
+  addBtn.type = 'button';
+  addBtn.textContent = '+ Agregar';
+
+  var cancelBtn = document.createElement('button');
+  cancelBtn.className = 'add-food-cancel-btn';
+  cancelBtn.type = 'button';
+  cancelBtn.textContent = 'x';
+
+  function agregar() {
+    var name = nameInput.value.trim();
+    if (!name) { nameInput.focus(); return; }
+    var kcal = parseInt(kcalInput.value) || 0;
+    var fromTabla = getKcalFromTabla(name);
+    if (fromTabla !== null) kcal = fromTabla;
+    var day = getDayData(currentDateStr);
+    if (!day[meal]) day[meal] = [];
+    day[meal].push({ name: name, kcal: kcal });
+    form.remove();
+    saveAll();
+    renderDiary();
+  }
+
+  addBtn.onclick = agregar;
+  cancelBtn.onclick = function() { form.remove(); };
+  nameInput.onkeydown = function(e) { if (e.key === 'Enter') agregar(); };
+
+  form.appendChild(nameInput);
+  form.appendChild(kcalInput);
+  form.appendChild(addBtn);
+  form.appendChild(cancelBtn);
+
   body.classList.add('open');
-  document.getElementById('toggle-' + meal).classList.add('open');
+  var tog = document.getElementById('toggle-' + meal);
+  if (tog) tog.classList.add('open');
   body.appendChild(form);
-  setTimeout(function() { var el = document.getElementById('af-name-' + meal); if(el) el.focus(); }, 50);
+  setTimeout(function() { nameInput.focus(); }, 50);
 }
 
-function confirmAddFood(meal) {
-  var nameEl = document.getElementById('af-name-' + meal);
-  var kcalEl = document.getElementById('af-kcal-' + meal);
-  var name = nameEl ? nameEl.value.trim() : '';
-  if (!name) { if(nameEl) nameEl.focus(); return; }
-  var kcal = parseInt(kcalEl ? kcalEl.value : '0') || 0;
-  // Check tabla nutricional for kcal
-  var fromTabla = getKcalFromTabla(name);
-  if (fromTabla !== null) kcal = fromTabla;
-  var day = getDayData(currentDateStr);
-  day[meal].push({ name: name, kcal: kcal });
-  saveAll();
-  renderDiary();
-}
 function deleteFood(meal, idx) {
   const day = getDayData(currentDateStr);
   day[meal].splice(idx, 1);
@@ -2882,7 +2728,6 @@ function loadCompData() {
 
 function saveCompData() {
   try { localStorage.setItem(COMP_KEY, JSON.stringify(compData)); } catch(e) {}
-  if (window._fbSave) window._fbSave({ compData });
 }
 
 function renderCompTable() {
@@ -3155,24 +3000,17 @@ function updatePeso(fecha, val) {
 // ===== PERSIST =====
 function saveAll() {
   try {
-    localStorage.setItem('nutricion_diary', JSON.stringify(diaryData));
-    localStorage.setItem('nutricion_activity', JSON.stringify(activityData));
-    localStorage.setItem('nutricion_peso', JSON.stringify(pesoData));
-    localStorage.setItem('nutricion_ejercicio', JSON.stringify(ejercicioData));
+    var ts = Date.now();
+    localStorage.setItem('nutricion_diary',       JSON.stringify(diaryData));
+    localStorage.setItem('nutricion_activity',    JSON.stringify(activityData));
+    localStorage.setItem('nutricion_peso',        JSON.stringify(pesoData));
+    localStorage.setItem('nutricion_ejercicio',   JSON.stringify(ejercicioData));
+    localStorage.setItem('nutricion_tabla',       JSON.stringify(tablaData));
+    localStorage.setItem('nutricion_timestamp',   ts.toString());
     if (compData) localStorage.setItem('nutricion_composicion', JSON.stringify(compData));
+
+
   } catch(e) { console.warn('saveAll error:', e); }
-  // ☁️ Guardar en Firebase
-  if (window._fbSave) {
-    window._fbSave({
-      diaryData,
-      activityData,
-      pesoData,
-      ejercicioData,
-      compData: compData || null,
-      tablaData,
-      deletedRecetas: [...deletedRecetas]
-    });
-  }
 }
 
 function loadAll() {
@@ -3959,7 +3797,6 @@ let tablaData = JSON.parse(localStorage.getItem(TABLA_KEY) || '[]');
 
 function saveTabla() {
   localStorage.setItem(TABLA_KEY, JSON.stringify(tablaData));
-  if (window._fbSave) window._fbSave({ tablaData });
 }
 
 
@@ -4061,16 +3898,6 @@ function getKcalFromTabla(name) {
 }
 
 
-// Recordatorio de backup al cerrar
-window.addEventListener('beforeunload', function(e) {
-  var last = localStorage.getItem('nutricion_last_sync');
-  if (!last) return;
-  var diffDias = Math.floor((new Date() - new Date(last)) / 86400000);
-  if (diffDias >= 2) {
-    e.preventDefault();
-    e.returnValue = 'Hace ' + diffDias + ' días que no exportás tu backup. ¿Querés exportar antes de salir?';
-  }
-});
 
 // ===== INIT =====
 const pdfDiaryData = {"2026-04-16": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Pan lactal integral (40g) con queso untable light y mermelada light", "kcal": 160}], "Almuerzo": [{"name": "Pollo a la plancha (130g)", "kcal": 215}, {"name": "Vegetales A - lechuga y tomate (200g)", "kcal": 35}, {"name": "Vegetales B - zanahoria rallada (150g)", "kcal": 62}, {"name": "Aceite (1 cda.)", "kcal": 88}], "Merienda": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Pan lactal integral (40g) con queso untable light y mermelada light", "kcal": 160}], "Cena": [{"name": "Arroz integral cocido (80g)", "kcal": 98}, {"name": "Vegetales A - zapallitos (200g)", "kcal": 32}, {"name": "Vegetales B - cebolla y morrón (100g)", "kcal": 36}, {"name": "Huevo entero", "kcal": 72}], "Extras": [{"name": "Chipá (70g)", "kcal": 203}]}, "2026-04-17": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Pera (1 unidad ~150g)", "kcal": 86}], "Almuerzo": [{"name": "Milanesa de peceto al horno (132g)", "kcal": 251}, {"name": "Ensalada lechuga y tomate (150g) con limón y vinagre", "kcal": 25}], "Merienda": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Budín carrot cake (45g)", "kcal": 126}], "Cena": [{"name": "Pizzetas x2 con queso Port Salut Light (40g)", "kcal": 310}, {"name": "Tomate + orégano + berenjena", "kcal": 30}], "Extras": [{"name": "Cerveza (330ml)", "kcal": 142}]}, "2026-04-18": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Pan lactal integral (40g) con queso untable light y mermelada light", "kcal": 160}], "Almuerzo": [{"name": "Carne vacuna magra (120g)", "kcal": 172}, {"name": "Papa - Vegetal C (75g)", "kcal": 58}, {"name": "Ensalada verde (200g) - sin aceite", "kcal": 30}], "Merienda": [{"name": "Nachos con cheddar", "kcal": 350}], "Cena": [], "Extras": [{"name": "Vino (250ml)", "kcal": 213}, {"name": "Cerveza (330ml)", "kcal": 142}]}, "2026-04-19": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Budín carrot cake (45g)", "kcal": 126}], "Almuerzo": [{"name": "Asado - carne (150g)", "kcal": 465}, {"name": "½ morrón con huevo", "kcal": 90}, {"name": "3 rodajas zapallito asado", "kcal": 25}, {"name": "½ morcilla", "kcal": 190}], "Merienda": [{"name": "Café con leche (100ml)", "kcal": 35}], "Cena": [{"name": "Tallarines cocidos (50g crudo)", "kcal": 180}, {"name": "Salsa de tomate, morrón y cebolla", "kcal": 60}], "Extras": [{"name": "Copa de vino tinto", "kcal": 85}]}, "2026-04-20": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Pan lactal con queso untable y mermelada light", "kcal": 160}], "Almuerzo": [{"name": "Pollo (130g)", "kcal": 215}, {"name": "Vegetales A - champiñones (150g)", "kcal": 42}, {"name": "Vegetales B - calabaza (150g)", "kcal": 39}, {"name": "Aceite (1 cda.)", "kcal": 88}], "Merienda": [{"name": "Café con leche", "kcal": 35}, {"name": "Feta de jamón con triangulito queso light (20g)", "kcal": 60}], "Cena": [{"name": "Omelette - 1 huevo + 60g queso", "kcal": 230}, {"name": "Vegetales A - tomate y lechuga (200g)", "kcal": 32}], "Extras": []}, "2026-04-21": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Pan con queso crema y mermelada light", "kcal": 170}], "Almuerzo": [{"name": "Carne vacuna (95g)", "kcal": 136}, {"name": "Papa chica", "kcal": 77}, {"name": "Tomate (sin aceite)", "kcal": 18}], "Merienda": [{"name": "Té", "kcal": 2}, {"name": "Barrita Crudda (40g)", "kcal": 136}], "Cena": [{"name": "Pasta (60g crudo) a la crema de hongos", "kcal": 216}, {"name": "Crema light + cebolla + hongos", "kcal": 80}, {"name": "Queso (60g)", "kcal": 108}], "Extras": []}, "2026-04-22": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Budín carrot cake (45g)", "kcal": 126}], "Almuerzo": [{"name": "Pollo (40g)", "kcal": 66}, {"name": "Arroz integral crudo (30g) cocido", "kcal": 109}, {"name": "Zapallo (100g)", "kcal": 26}, {"name": "Aceite (1 cda.)", "kcal": 88}], "Merienda": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "2 rollitos de jamón y queso untable", "kcal": 80}], "Cena": [{"name": "Risotto - arroz (50g) + langostinos (80g) + vegetales", "kcal": 295}], "Extras": []}, "2026-04-23": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Barrita Crudda", "kcal": 136}], "Almuerzo": [{"name": "Pollo (85g)", "kcal": 140}, {"name": "Rúcula y tomate", "kcal": 20}, {"name": "Aceite (1 cda.)", "kcal": 88}, {"name": "1 aceituna", "kcal": 5}], "Merienda": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Budín carrot cake (45g)", "kcal": 126}], "Cena": [{"name": "Sopa de verduras", "kcal": 70}, {"name": "Fideos cocidos (60g crudo)", "kcal": 216}], "Extras": []}, "2026-04-24": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}], "Almuerzo": [{"name": "Pollo (90g)", "kcal": 149}, {"name": "Rúcula", "kcal": 12}, {"name": "Queso light (30g)", "kcal": 72}], "Merienda": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Budín carrot cake (75g)", "kcal": 210}], "Cena": [{"name": "Sopa de vegetales", "kcal": 70}, {"name": "Fideos cocidos (60g crudo)", "kcal": 216}], "Extras": [{"name": "Botella de vino (750ml)", "kcal": 638}]}, "2026-04-25": {"Desayuno": [], "Almuerzo": [{"name": "Milanesa de peceto al horno (146g)", "kcal": 277}, {"name": "Ensalada de rúcula (sin aceite)", "kcal": 20}], "Merienda": [{"name": "2 chipas chicos", "kcal": 200}, {"name": "Vigilante (queso y dulce)", "kcal": 280}], "Cena": [{"name": "Ravioles con pesto", "kcal": 540}], "Extras": [{"name": "Cerveza", "kcal": 200}, {"name": "Batatas fritas", "kcal": 350}]}, "2026-04-26": {"Desayuno": [], "Almuerzo": [{"name": "2 canelones de verdura con salsa mixta", "kcal": 240}], "Merienda": [{"name": "Café con leche (100ml)", "kcal": 35}], "Cena": [{"name": "2 canelones de verdura con salsa mixta", "kcal": 240}], "Extras": []}, "2026-04-27": {"Desayuno": [{"name": "Café con leche", "kcal": 35}, {"name": "Tostada con queso untable", "kcal": 110}], "Almuerzo": [{"name": "2 canelones de verdura", "kcal": 240}], "Merienda": [{"name": "Café con leche", "kcal": 35}, {"name": "2 fetas de jamón", "kcal": 40}], "Cena": [{"name": "Tapa de asado al horno (150g)", "kcal": 390}, {"name": "Ensalada grande rúcula y tomate", "kcal": 35}], "Extras": []}, "2026-04-28": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Pan (1 rodaja) con queso untable light y mermelada light", "kcal": 160}], "Almuerzo": [{"name": "Fideos con brócoli, cebolla y champiñones (60g crudo)", "kcal": 280}], "Merienda": [{"name": "Café con leche", "kcal": 35}, {"name": "2 fetas jamón + 1 de queso", "kcal": 80}], "Cena": [{"name": "2 milanesas de peceto al horno (190g total)", "kcal": 361}, {"name": "Ensalada", "kcal": 25}], "Extras": []}, "2026-04-29": {"Desayuno": [{"name": "Té", "kcal": 2}, {"name": "Pan (1 rodaja) con queso untable light y mermelada light", "kcal": 160}], "Almuerzo": [{"name": "Milanesa de peceto (95g)", "kcal": 181}, {"name": "Ensalada lechuga y cherrys", "kcal": 25}], "Merienda": [{"name": "Té", "kcal": 2}, {"name": "2 rollitos de jamón", "kcal": 40}], "Cena": [{"name": "Arroz (50g crudo) con langostinos (60g) y vegetales + oliva", "kcal": 330}], "Extras": []}, "2026-04-30": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Pan (1 rodaja) con queso untable light y mermelada light", "kcal": 160}], "Almuerzo": [{"name": "Sopa de verduras", "kcal": 70}, {"name": "Fideos (40g crudo)", "kcal": 144}], "Merienda": [{"name": "Mortadela con pistacho (70g)", "kcal": 218}], "Cena": [{"name": "Asado (30g)", "kcal": 93}, {"name": "Picada variada", "kcal": 400}], "Extras": [{"name": "Cerveza (1.5L)", "kcal": 645}]}, "2026-05-01": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}], "Almuerzo": [{"name": "Asado con ensalada", "kcal": 450}], "Merienda": [], "Cena": [{"name": "Tacos (2 unidades)", "kcal": 420}], "Extras": [{"name": "½ botella de vino (375ml)", "kcal": 319}]}, "2026-05-02": {"Desayuno": [], "Almuerzo": [{"name": "Sopa de verduras con fideos", "kcal": 250}], "Merienda": [{"name": "Nachos con queso", "kcal": 350}], "Cena": [{"name": "Fideos con tuco", "kcal": 450}], "Extras": [{"name": "Botella de vino (750ml)", "kcal": 638}, {"name": "Cerveza Corona (330ml)", "kcal": 148}, {"name": "½ roll de canela", "kcal": 180}, {"name": "Café con leche", "kcal": 35}]}, "2026-05-03": {"Desayuno": [{"name": "Café con leche", "kcal": 35}], "Almuerzo": [{"name": "Asado con ensalada", "kcal": 450}], "Merienda": [{"name": "Café con leche", "kcal": 35}], "Cena": [{"name": "Guiso de lentejas", "kcal": 320}], "Extras": []}, "2026-05-04": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Huevo revuelto", "kcal": 90}], "Almuerzo": [{"name": "Pechuga de pollo a la plancha (110g)", "kcal": 182}, {"name": "Ensalada lechuga, tomate y cebolla", "kcal": 35}], "Merienda": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Tostaditas de arroz con queso (20g)", "kcal": 90}], "Cena": [{"name": "Sopa de verduras casera", "kcal": 70}, {"name": "Fideos (40g crudo)", "kcal": 144}], "Extras": []}, "2026-05-05": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Crisppino (15g) con queso untable light", "kcal": 85}], "Almuerzo": [{"name": "Omelette - 1 huevo + queso port salud light", "kcal": 195}, {"name": "Ensalada lechuga y tomate", "kcal": 25}], "Merienda": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Crisppino (15g) con queso untable light", "kcal": 85}], "Cena": [{"name": "Wok de pollo (120g) con muchos vegetales", "kcal": 280}], "Extras": []}, "2026-05-06": {"Desayuno": [{"name": "Té con leche (80ml)", "kcal": 28}, {"name": "Crisppino (18g) con queso untable light", "kcal": 95}], "Almuerzo": [{"name": "Pollo (80g)", "kcal": 132}, {"name": "Tomate y albahaca", "kcal": 20}, {"name": "Queso light (50g)", "kcal": 120}], "Merienda": [{"name": "Té con leche (100ml)", "kcal": 35}, {"name": "Pan con mermelada y queso untable", "kcal": 160}], "Cena": [{"name": "Omelette - 1 huevo + queso port salud light (30g)", "kcal": 195}, {"name": "Tomate", "kcal": 18}], "Extras": []}, "2026-05-07": {"Desayuno": [{"name": "Té con leche", "kcal": 28}, {"name": "Pan con queso untable light y mermelada light", "kcal": 160}], "Almuerzo": [{"name": "Canelón de verdura grande con salsa de tomate natural", "kcal": 240}], "Merienda": [{"name": "Té", "kcal": 2}, {"name": "Cookie", "kcal": 120}], "Cena": [{"name": "Carne (150g)", "kcal": 215}, {"name": "Puré de calabaza", "kcal": 90}], "Extras": [{"name": "½ botella de vino (375ml)", "kcal": 319}]}, "2026-05-08": {"Desayuno": [{"name": "2 arepas con queso", "kcal": 320}, {"name": "Café con leche", "kcal": 35}], "Almuerzo": [{"name": "Pasta con porotos", "kcal": 450}], "Merienda": [{"name": "Café con leche", "kcal": 35}], "Cena": [{"name": "Milanesa con queso", "kcal": 400}, {"name": "Ensalada de rúcula y parmesano", "kcal": 80}], "Extras": [{"name": "Marroc (facturas)", "kcal": 350}]}, "2026-05-09": {"Desayuno": [], "Almuerzo": [{"name": "Pasta con crema, hongos, cebolla y jamón", "kcal": 520}], "Merienda": [], "Cena": [{"name": "Carne (150g)", "kcal": 215}, {"name": "Puré de calabaza", "kcal": 90}], "Extras": [{"name": "Marroc (facturas)", "kcal": 350}, {"name": "½ botella de vino (375ml)", "kcal": 319}]}, "2026-05-10": {"Desayuno": [], "Almuerzo": [{"name": "Focaccia con jamón crudo, rúcula, queso y cherrys", "kcal": 480}], "Merienda": [{"name": "Té", "kcal": 2}, {"name": "Cookie", "kcal": 120}], "Cena": [{"name": "Omelette - 1 huevo + queso light", "kcal": 195}, {"name": "Rúcula", "kcal": 12}], "Extras": []}, "2026-05-11": {"Desayuno": [{"name": "Café con leche (90ml)", "kcal": 32}], "Almuerzo": [{"name": "Pollo a la plancha (125g)", "kcal": 206}, {"name": "Calabaza hervida", "kcal": 65}], "Merienda": [{"name": "Té", "kcal": 2}, {"name": "2 fajitas (50g) con queso y jamón", "kcal": 200}], "Cena": [{"name": "Carne magra a la plancha (85g)", "kcal": 122}, {"name": "Puré de calabaza", "kcal": 90}], "Extras": [{"name": "Chocolate", "kcal": 150}]}, "2026-05-12": {"Desayuno": [{"name": "Tostado de jamón y queso", "kcal": 280}, {"name": "Latte", "kcal": 80}], "Almuerzo": [{"name": "Pastel de papa con ensalada", "kcal": 380}], "Merienda": [{"name": "Fajita con fiambrín", "kcal": 120}], "Cena": [{"name": "Pollo (85g)", "kcal": 140}, {"name": "Ensalada", "kcal": 25}], "Extras": []}, "2026-05-13": {"Desayuno": [{"name": "Té", "kcal": 2}, {"name": "Crisppino (10g)", "kcal": 39}], "Almuerzo": [{"name": "Pechuga de pollo a la plancha (83g) con limón", "kcal": 137}, {"name": "Rúcula", "kcal": 12}], "Merienda": [{"name": "Té", "kcal": 2}, {"name": "Crisppino (20g)", "kcal": 77}], "Cena": [{"name": "Risotto de arroz y verduras", "kcal": 280}], "Extras": []}, "2026-05-14": {"Desayuno": [{"name": "Café con leche", "kcal": 35}, {"name": "Tostada con queso light", "kcal": 110}], "Almuerzo": [{"name": "Fideos (60g secos) con brócoli y cebolla", "kcal": 280}], "Merienda": [{"name": "Café con leche", "kcal": 35}, {"name": "Tostada con queso light", "kcal": 110}], "Cena": [{"name": "Carne magra (100g)", "kcal": 143}, {"name": "Ensalada criolla", "kcal": 40}], "Extras": [{"name": "Kinder Bueno", "kcal": 150}]}, "2026-05-15": {"Desayuno": [{"name": "Café con leche", "kcal": 35}, {"name": "Tostada con queso light", "kcal": 110}], "Almuerzo": [{"name": "Milanesa de peceto (135g)", "kcal": 257}, {"name": "Calabaza hervida", "kcal": 65}], "Merienda": [{"name": "1 feta de jamón cocido", "kcal": 20}], "Cena": [{"name": "2 panchos", "kcal": 520}], "Extras": [{"name": "½ botella de vino (375ml)", "kcal": 319}]}, "2026-05-16": {"Desayuno": [{"name": "Café con leche", "kcal": 35}], "Almuerzo": [{"name": "Fideos con crema, champis y jamón", "kcal": 580}], "Merienda": [], "Cena": [{"name": "Bife de chorizo", "kcal": 350}], "Extras": [{"name": "Cerveza 2L", "kcal": 860}, {"name": "Picada variada", "kcal": 400}]}, "2026-05-17": {"Desayuno": [], "Almuerzo": [{"name": "Pastas con tuco casero", "kcal": 420}], "Merienda": [], "Cena": [{"name": "Bife de chorizo (20g)", "kcal": 58}], "Extras": [{"name": "½ botella de vino (375ml)", "kcal": 319}, {"name": "Chocotorta (porción)", "kcal": 380}]}, "2026-05-18": {"Desayuno": [{"name": "Café con leche (80ml)", "kcal": 28}], "Almuerzo": [{"name": "Fideos (50g secos) con brócoli, cebolla y queso crema light", "kcal": 280}], "Merienda": [{"name": "Café con leche descremada", "kcal": 28}, {"name": "Carrot Cake Bimbo", "kcal": 160}], "Cena": [{"name": "Carne vacuna magra (95g crudo)", "kcal": 136}, {"name": "Ensalada de cebolla y tomate", "kcal": 35}], "Extras": []}, "2026-05-19": {"Desayuno": [{"name": "Té con leche descremada (100ml)", "kcal": 35}, {"name": "Rodaja de carrot cake", "kcal": 126}], "Almuerzo": [{"name": "Milanesa de peceto (170g)", "kcal": 323}, {"name": "Ensalada tomate y rúcula (200g)", "kcal": 35}, {"name": "Aceite (1 cda.)", "kcal": 88}], "Merienda": [{"name": "Café con leche", "kcal": 35}], "Cena": [{"name": "Sopa de verdura", "kcal": 70}, {"name": "Fideos (40g crudo)", "kcal": 144}], "Extras": []}, "2026-05-20": {"Desayuno": [{"name": "Té con leche descremada (100ml)", "kcal": 35}, {"name": "Rodaja de carrot cake", "kcal": 126}], "Almuerzo": [{"name": "Pechuga de pollo a la plancha (150g) con limón", "kcal": 248}, {"name": "Vegetales A - rúcula y tomate (200g)", "kcal": 35}, {"name": "Aceite de oliva (1 cda.)", "kcal": 88}], "Merienda": [{"name": "Latte", "kcal": 80}, {"name": "Tostado jamón y queso", "kcal": 250}], "Cena": [{"name": "Omelette con jamón y queso", "kcal": 230}, {"name": "Ensalada", "kcal": 25}], "Extras": []}, "2026-05-21": {"Desayuno": [{"name": "Café con leche descremada (80ml)", "kcal": 28}, {"name": "Carrot cake (30g)", "kcal": 84}], "Almuerzo": [{"name": "Guiso de lentejas", "kcal": 350}], "Merienda": [{"name": "Café con leche descremada (100ml)", "kcal": 35}], "Cena": [{"name": "Guiso de lentejas", "kcal": 350}], "Extras": [{"name": "Cerveza (1 lata 330ml)", "kcal": 142}, {"name": "Chocotorta (porción pequeña)", "kcal": 200}]}, "2026-05-22": {"Desayuno": [{"name": "Café con leche descremada (80ml)", "kcal": 28}, {"name": "Carrot cake (30g)", "kcal": 84}], "Almuerzo": [{"name": "Fideos (60g) con brócoli, cebolla y queso crema light (20g)", "kcal": 300}], "Merienda": [{"name": "Té", "kcal": 2}, {"name": "Rollito de jamón cocido (~15g) y queso light (~20g)", "kcal": 60}], "Cena": [{"name": "Milanesa de pollo con poca salsa cheddar", "kcal": 350}], "Extras": [{"name": "½ botella de vino (375ml)", "kcal": 319}]}, "2026-05-25": {"Desayuno": [{"name": "Café con leche descremada", "kcal": 28}], "Almuerzo": [{"name": "Risotto con verduras y frutos de mar", "kcal": 380}], "Merienda": [], "Cena": [{"name": "Sopa de verduras con fideos", "kcal": 250}], "Extras": [{"name": "½ botella de vino (375ml)", "kcal": 319}, {"name": "Cerveza (1 lata 330ml)", "kcal": 142}, {"name": "½ alfajor de chocolate con dulce de leche", "kcal": 215}]}, "2026-05-26": {"Desayuno": [{"name": "Té con leche descremada", "kcal": 35}], "Almuerzo": [{"name": "Pechuga de pollo a la plancha (150g)", "kcal": 248}, {"name": "Ensalada hojas verdes y tomate", "kcal": 30}], "Merienda": [{"name": "Té con leche descremada (100ml)", "kcal": 35}, {"name": "2 fetas jamón cocido", "kcal": 40}, {"name": "Galletitas Shiva (30g)", "kcal": 135}, {"name": "Hummus de remolacha (1 cda.)", "kcal": 33}], "Cena": [{"name": "Arroz (50g seco) con queso cremoso light (30g)", "kcal": 236}, {"name": "Puré de calabaza", "kcal": 90}, {"name": "½ alfajor", "kcal": 215}], "Extras": []}, "2026-05-27": {"Desayuno": [{"name": "Té con leche descremada", "kcal": 35}], "Almuerzo": [{"name": "Pollo a la plancha (90g)", "kcal": 149}, {"name": "Tomate y medio", "kcal": 27}], "Merienda": [{"name": "Té con leche descremada (70ml)", "kcal": 25}, {"name": "Galletitas Shiva (30g)", "kcal": 135}, {"name": "Hummus (1 cda., 20g)", "kcal": 33}], "Cena": [{"name": "Omelette - 1 huevo + queso light (30g)", "kcal": 195}, {"name": "Puré de calabaza (200g)", "kcal": 60}], "Extras": []}, "2026-05-28": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "Barrita Crudda", "kcal": 136}], "Almuerzo": [{"name": "Sopa de verduras", "kcal": 70}, {"name": "Fideos (60g crudo)", "kcal": 216}], "Merienda": [{"name": "Café con leche (70ml)", "kcal": 25}, {"name": "3 cubanitos", "kcal": 100}], "Cena": [{"name": "Pollo (85g)", "kcal": 140}, {"name": "Rúcula y tomate", "kcal": 20}, {"name": "Aceite (1 cda.)", "kcal": 88}], "Extras": [{"name": "Galletitas Shiva", "kcal": 135}]}, "2026-05-29": {"Desayuno": [{"name": "Café con leche (100ml)", "kcal": 35}, {"name": "3 fetas de fiambrín", "kcal": 50}], "Almuerzo": [{"name": "Milanesa de peceto al horno (130g)", "kcal": 247}, {"name": "Ensalada de rúcula", "kcal": 15}, {"name": "Queso light (30g)", "kcal": 72}], "Merienda": [{"name": "Café con leche descremada (100ml)", "kcal": 35}], "Cena": [{"name": "Carne magra (150g)", "kcal": 215}], "Extras": [{"name": "½ botella de vino (375ml)", "kcal": 319}]}, "2026-05-30": {"Desayuno": [{"name": "Café con leche descremada (70ml)", "kcal": 25}, {"name": "Feta de jamón cocido", "kcal": 20}, {"name": "Queso Port Salut light (15g)", "kcal": 36}], "Almuerzo": [{"name": "Milanesa de pollo al horno (150g)", "kcal": 285}, {"name": "Ensalada de rúcula (sin aceite)", "kcal": 15}], "Merienda": [{"name": "Café con leche descremada (70ml)", "kcal": 25}, {"name": "Feta de jamón cocido", "kcal": 20}, {"name": "Queso Port Salut light (15g)", "kcal": 36}], "Cena": [{"name": "Pizza (1 porción grande)", "kcal": 350}, {"name": "Fainá (1 porción)", "kcal": 220}], "Extras": [{"name": "½ botella de vino (375ml)", "kcal": 319}]}, "2026-05-31": {"Desayuno": [{"name": "Café con leche descremada (70ml)", "kcal": 25}, {"name": "Galletitas Shiva (30g)", "kcal": 135}, {"name": "Hummus (1 cda.)", "kcal": 33}], "Almuerzo": [{"name": "Pastas (60g crudo) con salsa casera de tomate (sin aceite)", "kcal": 280}], "Merienda": [{"name": "Café con leche descremada (70ml)", "kcal": 25}, {"name": "Galletitas Shiva (30g)", "kcal": 135}, {"name": "Hummus (1 cda.)", "kcal": 33}], "Cena": [{"name": "Carne magra a la plancha (120g)", "kcal": 172}, {"name": "Ensalada verde (sin aceite)", "kcal": 25}], "Extras": []}};
@@ -4081,7 +3908,7 @@ const pdfActivityData = {"2026-04-16": {"ejercicio": "Ejercicio", "ejercicio_ok"
 const pdfDayTotals = {"2026-04-16": 1400, "2026-04-17": 1270, "2026-04-18": 1345, "2026-04-19": 1355, "2026-04-20": 1095, "2026-04-21": 1200, "2026-04-22": 1100, "2026-04-23": 1000, "2026-04-24": 1570, "2026-04-25": 2026, "2026-04-26": 800, "2026-04-27": 1050, "2026-04-28": 1100, "2026-04-29": 900, "2026-04-30": 1630, "2026-05-01": 1310, "2026-05-02": 2000, "2026-05-03": 1340, "2026-05-04": 835, "2026-05-05": 860, "2026-05-06": 780, "2026-05-07": 1300, "2026-05-08": 1700, "2026-05-09": 1500, "2026-05-10": 1400, "2026-05-11": 1050, "2026-05-12": 1050, "2026-05-13": 520, "2026-05-14": 1150, "2026-05-15": 1420, "2026-05-16": 1900, "2026-05-17": 1200, "2026-05-18": 830, "2026-05-19": 750, "2026-05-20": 850, "2026-05-21": 1230, "2026-05-22": 1040, "2026-05-25": 1175, "2026-05-26": 965, "2026-05-27": 600, "2026-05-28": 950, "2026-05-29": 1060, "2026-05-30": 1400, "2026-05-31": 830};
 loadAll();
 loadCompData();
-// (sincronización ahora manejada por Firebase)
+
 
 // Seed diary and activity with PDF data for days not yet in localStorage
 Object.keys(pdfDiaryData).forEach(fecha => {
@@ -4218,4 +4045,123 @@ renderDiary();
     <img class="photo-preview" id="photo-preview-img" src="" alt="Foto del plato">
     <div class="photo-upload-area" onclick="document.getElementById('photo-file-input').click()">
       <div style="font-size:32px;margin-bottom:8px;">📷</div>
-      <div>Tocá para elegir una fot
+      <div>Tocá para elegir una foto</div>
+      <input type="file" id="photo-file-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event)">
+    </div>
+    <div class="photo-modal-btns" id="photo-modal-btns">
+      <button class="photo-modal-btn secondary" onclick="closePhotoModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="mic-toast" id="mic-toast">
+  <span>🎤</span><span class="mic-toast-msg">Escuchando...</span>
+</div>
+
+
+
+
+
+<!-- FIREBASE SYNC -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+  // Config
+  var fbApp = firebase.initializeApp({
+    apiKey: "AIzaSyBDPhGg3OYBoP_mIr-7Ay9GEVllAB0L2Ys",
+    authDomain: "lu-new-e4af4.firebaseapp.com",
+    databaseURL: "https://lu-new-e4af4-default-rtdb.firebaseio.com",
+    projectId: "lu-new-e4af4",
+    storageBucket: "lu-new-e4af4.firebasestorage.app",
+    messagingSenderId: "532161561371",
+    appId: "1:532161561371:web:1549cf402bae27427d49be"
+  });
+  var fbDb  = firebase.database();
+  var fbRef = fbDb.ref('lucia');
+  var fbGuardando = false;
+
+  function fbStatus(msg, color) {
+    var el = document.getElementById('sync-status');
+    if (el) { el.textContent = msg; el.style.color = color || 'rgba(200,245,210,0.9)'; }
+  }
+
+  // SUBIR datos a Firebase
+  function fbSave() {
+    if (fbGuardando) return;
+    fbGuardando = true;
+    var ts = Date.now();
+    localStorage.setItem('fb_ts', ts);
+    fbRef.set({
+      ts: ts,
+      diary:    JSON.parse(localStorage.getItem('nutricion_diary')    || '{}'),
+      activity: JSON.parse(localStorage.getItem('nutricion_activity') || '{}'),
+      peso:     JSON.parse(localStorage.getItem('nutricion_peso')     || '{}'),
+      ejercicio:JSON.parse(localStorage.getItem('nutricion_ejercicio')|| '[]'),
+      comp:     JSON.parse(localStorage.getItem('nutricion_composicion') || 'null'),
+      tabla:    JSON.parse(localStorage.getItem('nutricion_tabla')    || '[]'),
+      deleted:  JSON.parse(localStorage.getItem('deletedRecetas')     || '[]'),
+    }).then(function() {
+      fbGuardando = false;
+      fbStatus('☁️ ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+    }).catch(function(e) {
+      fbGuardando = false;
+      fbStatus('⚠️ Sin conexión', 'rgba(255,180,80,0.9)');
+      console.error('Firebase write error:', e);
+    });
+  }
+
+  // Hook: llamar fbSave() después de cada saveAll()
+  var _origSaveAll = saveAll;
+  saveAll = function() {
+    _origSaveAll();
+    fbSave();
+  };
+
+  // ESCUCHAR cambios en tiempo real
+  fbRef.on('value', function(snap) {
+    var d = snap.val();
+    if (!d) { fbStatus('☁️ Listo'); return; }
+
+    var localTs = parseInt(localStorage.getItem('fb_ts') || '0');
+    if (d.ts <= localTs) { fbStatus('☁️ Al día'); return; }
+
+    // Datos nuevos desde otro dispositivo — aplicar
+    fbGuardando = true;
+    localStorage.setItem('fb_ts', d.ts);
+
+    if (d.diary)    { diaryData     = d.diary;    localStorage.setItem('nutricion_diary',         JSON.stringify(d.diary)); }
+    if (d.activity) { activityData  = d.activity; localStorage.setItem('nutricion_activity',      JSON.stringify(d.activity)); }
+    if (d.peso)     { pesoData      = d.peso;      localStorage.setItem('nutricion_peso',          JSON.stringify(d.peso)); }
+    if (d.ejercicio){ ejercicioData = d.ejercicio; localStorage.setItem('nutricion_ejercicio',     JSON.stringify(d.ejercicio)); }
+    if (d.comp)     { compData      = d.comp;      localStorage.setItem('nutricion_composicion',   JSON.stringify(d.comp)); }
+    if (d.tabla)    { tablaData     = d.tabla;     localStorage.setItem('nutricion_tabla',         JSON.stringify(d.tabla)); }
+    if (d.deleted)  { deletedRecetas = new Set(d.deleted); localStorage.setItem('deletedRecetas', JSON.stringify(d.deleted)); }
+
+    fbGuardando = false;
+    fbStatus('🔄 Actualizando...', 'rgba(245,221,216,0.8)');
+
+    // Re-renderizar tab activo
+    setTimeout(function() {
+      var active = document.querySelector('.tab-content[style*="block"]');
+      if (!active) { fbStatus('☁️ Sincronizado ✓'); return; }
+      var t = active.id.replace('tab-','');
+      try {
+        if (t === 'diario')      renderDiary();
+        if (t === 'pesaje')      renderPesaje();
+        if (t === 'composicion') renderCompTable();
+        if (t === 'recetas')     renderRecetas();
+        if (t === 'ejercicio')   renderEjercicio();
+        if (t === 'tabla')       renderTabla();
+      } catch(e) { console.warn(e); }
+      fbStatus('☁️ Sincronizado ✓');
+    }, 200);
+
+  }, function(err) {
+    fbStatus('⚠️ Error: ' + err.code, 'rgba(255,120,80,0.9)');
+    console.error('Firebase listen error:', err);
+  });
+
+  fbStatus('⏳ Conectando...', 'rgba(245,221,216,0.5)');
+</script>
+</body>
+</html>
