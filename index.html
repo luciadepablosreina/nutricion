@@ -1421,13 +1421,10 @@ canvas { width: 100% !important; }
 
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('plan',this)">🌿 Plan</button>
-    <button class="tab-btn" onclick="showTab('diario',this)">📓 Diario</button>
+    <button class="tab-btn" onclick="showTab('plan',this)">🌿 Plan</button>
+    <button class="tab-btn active" onclick="showTab('diario',this)">📓 Diario</button>
     <button class="tab-btn" onclick="showTab('pesaje',this)">⚖️ Pesaje</button>
     <button class="tab-btn" onclick="showTab('composicion',this)">📊 Composición</button>
-    <button class="tab-btn" onclick="showTab('recetas',this)">🍽 Recetas</button>
-    <button class="tab-btn" onclick="showTab('tabla',this)">📋 Tabla Nutricional</button>
-    <button class="tab-btn" onclick="showTab('ejercicio',this)">🏃 Ejercicio</button>
   </div>
 </div>
 
@@ -1575,17 +1572,26 @@ canvas { width: 100% !important; }
         </div>
       </div>
       <div class="meal-body" id="body-Desayuno">
-        <div class="drop-zone" id="drop-Desayuno">arrastrá aquí</div>
         <div id="items-Desayuno"></div>
       </div>
     </div>
-    <div style="display:flex;gap:6px;padding:8px 8px 4px 8px;">
-      <input id="af-name-Desayuno" type="text" placeholder="Agregar a 🌅 Desayuno..." autocomplete="off"
-        style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:14px;color:var(--texto);background:var(--blanco);outline:none;">
+    <div style="display:flex;gap:6px;padding:8px 8px 4px 8px;flex-wrap:wrap;">
+      <input id="af-name-Desayuno" type="text" placeholder="Alimento..." autocomplete="off"
+        style="flex:2;min-width:120px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
+      <input id="af-cantidad-Desayuno" type="number" placeholder="cant." inputmode="numeric"
+        style="width:60px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
+      <select id="af-unidad-Desayuno"
+        style="border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
+        <option value="g">g</option>
+        <option value="ml">ml</option>
+        <option value="unidad">unid.</option>
+        <option value="taza">taza</option>
+        <option value="cda">cda.</option>
+      </select>
       <input id="af-kcal-Desayuno" type="number" placeholder="kcal" inputmode="numeric"
-        style="width:68px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 8px;font-family:Nunito,sans-serif;font-size:14px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
+        style="width:60px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
       <button type="button" onclick="doAgregarAlimento('Desayuno')"
-        style="background:var(--bordo);color:white;border:none;border-radius:10px;padding:10px 18px;font-family:Nunito,sans-serif;font-weight:700;font-size:16px;cursor:pointer;min-width:48px;min-height:48px;">＋</button>
+        style="background:var(--bordo);color:white;border:none;border-radius:10px;padding:10px 16px;font-family:Nunito,sans-serif;font-weight:700;font-size:16px;cursor:pointer;min-height:44px;">＋</button>
     </div>
 
     <div class="meal-section" id="meal-Almuerzo" data-meal="Almuerzo" ondragover="onMealDragOver(event)" ondrop="onMealDrop(event,'Almuerzo')" ondragleave="onMealDragLeave(event)">
@@ -1599,17 +1605,26 @@ canvas { width: 100% !important; }
         </div>
       </div>
       <div class="meal-body" id="body-Almuerzo">
-        <div class="drop-zone" id="drop-Almuerzo">arrastrá aquí</div>
         <div id="items-Almuerzo"></div>
       </div>
     </div>
-    <div style="display:flex;gap:6px;padding:8px 8px 4px 8px;">
-      <input id="af-name-Almuerzo" type="text" placeholder="Agregar a ☀️ Almuerzo..." autocomplete="off"
-        style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:14px;color:var(--texto);background:var(--blanco);outline:none;">
+    <div style="display:flex;gap:6px;padding:8px 8px 4px 8px;flex-wrap:wrap;">
+      <input id="af-name-Almuerzo" type="text" placeholder="Alimento..." autocomplete="off"
+        style="flex:2;min-width:120px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
+      <input id="af-cantidad-Almuerzo" type="number" placeholder="cant." inputmode="numeric"
+        style="width:60px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
+      <select id="af-unidad-Almuerzo"
+        style="border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
+        <option value="g">g</option>
+        <option value="ml">ml</option>
+        <option value="unidad">unid.</option>
+        <option value="taza">taza</option>
+        <option value="cda">cda.</option>
+      </select>
       <input id="af-kcal-Almuerzo" type="number" placeholder="kcal" inputmode="numeric"
-        style="width:68px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 8px;font-family:Nunito,sans-serif;font-size:14px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
+        style="width:60px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
       <button type="button" onclick="doAgregarAlimento('Almuerzo')"
-        style="background:var(--bordo);color:white;border:none;border-radius:10px;padding:10px 18px;font-family:Nunito,sans-serif;font-weight:700;font-size:16px;cursor:pointer;min-width:48px;min-height:48px;">＋</button>
+        style="background:var(--bordo);color:white;border:none;border-radius:10px;padding:10px 16px;font-family:Nunito,sans-serif;font-weight:700;font-size:16px;cursor:pointer;min-height:44px;">＋</button>
     </div>
 
     <div class="meal-section" id="meal-Merienda" data-meal="Merienda" ondragover="onMealDragOver(event)" ondrop="onMealDrop(event,'Merienda')" ondragleave="onMealDragLeave(event)">
@@ -1623,17 +1638,26 @@ canvas { width: 100% !important; }
         </div>
       </div>
       <div class="meal-body" id="body-Merienda">
-        <div class="drop-zone" id="drop-Merienda">arrastrá aquí</div>
         <div id="items-Merienda"></div>
       </div>
     </div>
-    <div style="display:flex;gap:6px;padding:8px 8px 4px 8px;">
-      <input id="af-name-Merienda" type="text" placeholder="Agregar a 🌸 Merienda..." autocomplete="off"
-        style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:14px;color:var(--texto);background:var(--blanco);outline:none;">
+    <div style="display:flex;gap:6px;padding:8px 8px 4px 8px;flex-wrap:wrap;">
+      <input id="af-name-Merienda" type="text" placeholder="Alimento..." autocomplete="off"
+        style="flex:2;min-width:120px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
+      <input id="af-cantidad-Merienda" type="number" placeholder="cant." inputmode="numeric"
+        style="width:60px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
+      <select id="af-unidad-Merienda"
+        style="border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
+        <option value="g">g</option>
+        <option value="ml">ml</option>
+        <option value="unidad">unid.</option>
+        <option value="taza">taza</option>
+        <option value="cda">cda.</option>
+      </select>
       <input id="af-kcal-Merienda" type="number" placeholder="kcal" inputmode="numeric"
-        style="width:68px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 8px;font-family:Nunito,sans-serif;font-size:14px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
+        style="width:60px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
       <button type="button" onclick="doAgregarAlimento('Merienda')"
-        style="background:var(--bordo);color:white;border:none;border-radius:10px;padding:10px 18px;font-family:Nunito,sans-serif;font-weight:700;font-size:16px;cursor:pointer;min-width:48px;min-height:48px;">＋</button>
+        style="background:var(--bordo);color:white;border:none;border-radius:10px;padding:10px 16px;font-family:Nunito,sans-serif;font-weight:700;font-size:16px;cursor:pointer;min-height:44px;">＋</button>
     </div>
 
     <div class="meal-section" id="meal-Cena" data-meal="Cena" ondragover="onMealDragOver(event)" ondrop="onMealDrop(event,'Cena')" ondragleave="onMealDragLeave(event)">
@@ -1647,17 +1671,26 @@ canvas { width: 100% !important; }
         </div>
       </div>
       <div class="meal-body" id="body-Cena">
-        <div class="drop-zone" id="drop-Cena">arrastrá aquí</div>
         <div id="items-Cena"></div>
       </div>
     </div>
-    <div style="display:flex;gap:6px;padding:8px 8px 4px 8px;">
-      <input id="af-name-Cena" type="text" placeholder="Agregar a 🌙 Cena..." autocomplete="off"
-        style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:14px;color:var(--texto);background:var(--blanco);outline:none;">
+    <div style="display:flex;gap:6px;padding:8px 8px 4px 8px;flex-wrap:wrap;">
+      <input id="af-name-Cena" type="text" placeholder="Alimento..." autocomplete="off"
+        style="flex:2;min-width:120px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
+      <input id="af-cantidad-Cena" type="number" placeholder="cant." inputmode="numeric"
+        style="width:60px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
+      <select id="af-unidad-Cena"
+        style="border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
+        <option value="g">g</option>
+        <option value="ml">ml</option>
+        <option value="unidad">unid.</option>
+        <option value="taza">taza</option>
+        <option value="cda">cda.</option>
+      </select>
       <input id="af-kcal-Cena" type="number" placeholder="kcal" inputmode="numeric"
-        style="width:68px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 8px;font-family:Nunito,sans-serif;font-size:14px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
+        style="width:60px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
       <button type="button" onclick="doAgregarAlimento('Cena')"
-        style="background:var(--bordo);color:white;border:none;border-radius:10px;padding:10px 18px;font-family:Nunito,sans-serif;font-weight:700;font-size:16px;cursor:pointer;min-width:48px;min-height:48px;">＋</button>
+        style="background:var(--bordo);color:white;border:none;border-radius:10px;padding:10px 16px;font-family:Nunito,sans-serif;font-weight:700;font-size:16px;cursor:pointer;min-height:44px;">＋</button>
     </div>
 
     <div class="meal-section" id="meal-Extras" data-meal="Extras" ondragover="onMealDragOver(event)" ondrop="onMealDrop(event,'Extras')" ondragleave="onMealDragLeave(event)">
@@ -1671,17 +1704,26 @@ canvas { width: 100% !important; }
         </div>
       </div>
       <div class="meal-body" id="body-Extras">
-        <div class="drop-zone" id="drop-Extras">arrastrá aquí</div>
         <div id="items-Extras"></div>
       </div>
     </div>
-    <div style="display:flex;gap:6px;padding:8px 8px 4px 8px;">
-      <input id="af-name-Extras" type="text" placeholder="Agregar a ✨ Extras..." autocomplete="off"
-        style="flex:1;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:14px;color:var(--texto);background:var(--blanco);outline:none;">
+    <div style="display:flex;gap:6px;padding:8px 8px 4px 8px;flex-wrap:wrap;">
+      <input id="af-name-Extras" type="text" placeholder="Alimento..." autocomplete="off"
+        style="flex:2;min-width:120px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
+      <input id="af-cantidad-Extras" type="number" placeholder="cant." inputmode="numeric"
+        style="width:60px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
+      <select id="af-unidad-Extras"
+        style="border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;">
+        <option value="g">g</option>
+        <option value="ml">ml</option>
+        <option value="unidad">unid.</option>
+        <option value="taza">taza</option>
+        <option value="cda">cda.</option>
+      </select>
       <input id="af-kcal-Extras" type="number" placeholder="kcal" inputmode="numeric"
-        style="width:68px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 8px;font-family:Nunito,sans-serif;font-size:14px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
+        style="width:60px;border:1px solid rgba(232,180,173,0.4);border-radius:8px;padding:10px 6px;font-family:Nunito,sans-serif;font-size:13px;color:var(--texto);background:var(--blanco);outline:none;text-align:center;">
       <button type="button" onclick="doAgregarAlimento('Extras')"
-        style="background:var(--bordo);color:white;border:none;border-radius:10px;padding:10px 18px;font-family:Nunito,sans-serif;font-weight:700;font-size:16px;cursor:pointer;min-width:48px;min-height:48px;">＋</button>
+        style="background:var(--bordo);color:white;border:none;border-radius:10px;padding:10px 16px;font-family:Nunito,sans-serif;font-weight:700;font-size:16px;cursor:pointer;min-height:44px;">＋</button>
     </div>
   </div>
 
@@ -1833,9 +1875,6 @@ function showTab(t, btn) {
   if (t === 'diario')      renderDiary();
   if (t === 'pesaje')      renderPesaje();
   if (t === 'composicion') renderCompTable();
-  if (t === 'recetas')     renderRecetas();
-  if (t === 'ejercicio')   renderEjercicio();
-  if (t === 'tabla')       renderTabla();
 }
 
 // ===== DIARY =====
@@ -1874,33 +1913,18 @@ function renderDiary() {
     container.innerHTML = '';
 
     if (items.length === 0) {
-      dropZone.style.display = 'flex';
+      if (dropZone) dropZone.style.display = 'none';
     } else {
-      dropZone.style.display = 'none';
+      if (dropZone) dropZone.style.display = 'none';
       items.forEach((item, idx) => {
         const el = document.createElement('div');
-        el.className = 'food-item';
-        el.draggable = true;
-        el.dataset.meal = meal;
-        el.dataset.idx = idx;
-        const checked = item.done ? 'done' : '';
-        const consumed = item.done ? 'consumed' : '';
-        el.className = 'food-item ' + consumed;
-        const inputId = 'inp-food-${meal}-${idx}';
-        el.innerHTML = `<span class="drag-handle">⠿</span>
-<button class="food-check ${checked}" onclick="toggleFoodDone('${meal}',${idx})">✓</button>
-<input id="${inputId}" class="food-name-input" value="${item.name.replace(/"/g,'&quot;')}" onchange="editFoodName('${meal}',${idx},this.value)" title="Editá el nombre">
-<button class="mic-btn" onclick="event.stopPropagation();startDictado(this,'${inputId}')" title="Dictá por voz">🎤</button>
-<input class="food-kcal-input" type="number" value="${item.kcal}" onchange="editFoodKcal('${meal}',${idx},this.value)" title="Editá las calorías" style="display:none;">
+        el.className = 'food-item ' + (item.done ? 'consumed' : '');
+        const cantStr = item.cantidad ? (item.cantidad + ' ' + (item.unidad || 'g') + ' · ') : '';
+        el.innerHTML = `
+<button class="food-check ${item.done ? 'done' : ''}" onclick="toggleFoodDone('${meal}',${idx})">✓</button>
+<input class="food-name-input" value="${item.name.replace(/"/g,'&quot;')}" onchange="editFoodName('${meal}',${idx},this.value)" title="Editá el nombre" style="flex:1;">
+<span style="font-size:11px;color:var(--texto-suave);white-space:nowrap;padding:0 4px;">${cantStr}${item.kcal ? item.kcal + ' kcal' : ''}</span>
 <button class="food-del" onclick="deleteFood('${meal}',${idx})">×</button>`;
-        el.addEventListener('dragstart', (e) => {
-          draggedItem = item;
-          draggedFrom = meal;
-          el.classList.add('dragging');
-          e.dataTransfer.effectAllowed = 'move';
-          e.dataTransfer.setData('text/plain', JSON.stringify({meal, idx}));
-        });
-        el.addEventListener('dragend', () => el.classList.remove('dragging'));
         container.appendChild(el);
       });
     }
@@ -3958,7 +3982,7 @@ Object.keys(pdfActivityData).forEach(fecha => {
   if (!activityData[fecha]) activityData[fecha] = pdfActivityData[fecha];
 });
 saveAll();
-renderDiary();
+showTab('diario', document.querySelector('.tab-btn'));
 </script>
 
 <!-- TAB 5: COMPOSICIÓN CORPORAL -->
@@ -3996,113 +4020,6 @@ renderDiary();
   </div>
 
 </div>
-<!-- TAB 6: RECETAS -->
-<div id="tab-recetas" class="tab-content">
-  <div class="card">
-    <div class="card-title">🍽 Mis Recetas</div>
-    <p style="font-size:13px;color:var(--texto-suave);margin-bottom:14px;">Combinaciones de comidas de tu diario. Tocá 🗑 para eliminar las repetidas.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;" id="recetas-filter-btns">
-      <button class="receta-filter-btn active" onclick="filterRecetas('Todos')">Todos</button>
-      <button class="receta-filter-btn" onclick="filterRecetas('Desayuno')">🌅 Desayuno</button>
-      <button class="receta-filter-btn" onclick="filterRecetas('Almuerzo')">☀️ Almuerzo</button>
-      <button class="receta-filter-btn" onclick="filterRecetas('Merienda')">🌸 Merienda</button>
-      <button class="receta-filter-btn" onclick="filterRecetas('Cena')">🌙 Cena</button>
-    </div>
-    <div id="recetas-lista"></div>
-  </div>
-</div>
-
-<!-- TAB 7: EJERCICIO -->
-<div id="tab-ejercicio" class="tab-content">
-  <div class="card" style="margin-bottom:14px;">
-    <div class="card-title">🏋️ Registrar Ejercicio</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-      <div>
-        <label class="ej-label">📅 Fecha</label>
-        <input type="date" id="ej-fecha" class="ej-input">
-      </div>
-      <div>
-        <label class="ej-label">⚖️ Peso corporal (kg)</label>
-        <input type="number" id="ej-peso" min="40" max="200" step="0.5" value="71" oninput="calcQuemadas()" class="ej-input">
-      </div>
-    </div>
-    <label class="ej-label">Categoría</label>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 14px;">
-      <button class="ej-cat-btn active" data-cat="Todos" onclick="ejSetFiltro('Todos')">Todos</button>
-      <button class="ej-cat-btn" data-cat="Cardio" onclick="ejSetFiltro('Cardio')">🏃 Cardio</button>
-      <button class="ej-cat-btn" data-cat="Piernas/Glúteos" onclick="ejSetFiltro('Piernas/Glúteos')">🦵 Piernas</button>
-      <button class="ej-cat-btn" data-cat="Brazos/Torso" onclick="ejSetFiltro('Brazos/Torso')">💪 Brazos</button>
-      <button class="ej-cat-btn" data-cat="Abdomen" onclick="ejSetFiltro('Abdomen')">🧱 Abdomen</button>
-    </div>
-    <div id="ej-ejercicios-lista" style="margin-bottom:12px;"></div>
-    <button onclick="ejAddEjercicio()" class="comp-action-btn" style="margin-bottom:16px;">＋ Agregar ejercicio</button>
-    <div id="ej-resultado" style="display:none;background:linear-gradient(135deg,var(--bordo-oscuro),var(--bordo));border-radius:14px;padding:18px;margin-bottom:14px;text-align:center;"></div>
-    <button id="ej-guardar-btn" onclick="guardarEjercicio()" class="receta-add-btn" style="width:100%;justify-content:center;font-size:14px;padding:13px;">💾 Guardar sesión</button>
-  </div>
-  <div class="card" style="margin-bottom:14px;">
-    <div class="card-title" style="margin-bottom:12px;">📈 Calorías quemadas por semana</div>
-    <canvas id="ejercicioChart" height="180"></canvas>
-  </div>
-  <div class="card">
-    <div class="card-title">📋 Historial de Sesiones</div>
-    <div id="ejercicio-lista" style="margin-top:8px;"></div>
-  </div>
-</div>
-
-
-<!-- TAB 8: TABLA NUTRICIONAL -->
-<div id="tab-tabla" class="tab-content">
-  <div class="card">
-    <div class="card-title">📋 Tabla Nutricional</div>
-    <p style="font-size:13px;color:var(--texto-suave);margin-bottom:14px;">Cargá tus alimentos con sus calorías reales. Se usan automáticamente en el Diario.</p>
-    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-      <button onclick="tablaAddRow()" class="comp-action-btn">＋ Agregar alimento</button>
-      <button onclick="tablaImport()" class="comp-action-btn" style="background:rgba(139,58,58,0.12);color:var(--bordo);border:1px solid rgba(139,58,58,0.2);">📥 Importar desde Diario</button>
-      <button onclick="tablaDeleteAll()" class="comp-action-btn" style="background:rgba(192,57,43,0.1);color:var(--rojo);border:1px solid rgba(192,57,43,0.25);">🗑 Eliminar todos</button>
-    </div>
-    <div class="comp-table-wrapper">
-      <table class="comp-table" id="tabla-nutricional">
-        <thead>
-          <tr>
-            <th style="text-align:left;padding-left:14px;min-width:200px;">Alimento</th>
-            <th>Porción</th>
-            <th>Unidad</th>
-            <th>Calorías</th>
-            <th>Notas</th>
-            <th style="width:36px;"></th>
-          </tr>
-        </thead>
-        <tbody id="tabla-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL FOTO -->
-<div class="photo-modal-overlay" id="photo-modal-overlay" onclick="if(event.target===this)closePhotoModal()">
-  <div class="photo-modal">
-    <div class="photo-modal-title" id="photo-modal-title">📷 Foto del plato</div>
-    <img class="photo-preview" id="photo-preview-img" src="" alt="Foto del plato">
-    <div class="photo-upload-area" onclick="document.getElementById('photo-file-input').click()">
-      <div style="font-size:32px;margin-bottom:8px;">📷</div>
-      <div>Tocá para elegir una foto</div>
-      <input type="file" id="photo-file-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event)">
-    </div>
-    <div class="photo-modal-btns" id="photo-modal-btns">
-      <button class="photo-modal-btn secondary" onclick="closePhotoModal()">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<div class="mic-toast" id="mic-toast">
-  <span>🎤</span><span class="mic-toast-msg">Escuchando...</span>
-</div>
-
-
-
-
-
-
 
 <!-- SUPABASE SYNC -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -4111,49 +4028,50 @@ renderDiary();
   var SUPABASE_URL = 'https://calojntgnrkvkbpugllt.supabase.co';
   var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhbG9qbnRnbnJrdmticHVnbGx0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NDczNjcsImV4cCI6MjA5NjUyMzM2N30.beusb-S_CPm6EJoKTA27tHEJRK5rJidjFkRemCaa5j4';
   var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
   var ROW_ID = 1;
-  var guardando = false;
+  var miTs = 0; // timestamp de lo que YO guardé — para ignorar el eco
 
   function sbStatus(msg, color) {
     var el = document.getElementById('sync-status');
     if (el) { el.textContent = msg; el.style.color = color || 'rgba(200,245,210,0.9)'; }
   }
 
-  // Guardar datos en Supabase
   function sbGuardar() {
-    if (guardando) return;
-    guardando = true;
-    var ts = Date.now();
+    miTs = Date.now();
     var datos = {
-      id:       ROW_ID,
-      ts:       ts,
+      ts:       miTs,
       diary:    JSON.parse(localStorage.getItem('nutricion_diary')       || '{}'),
       activity: JSON.parse(localStorage.getItem('nutricion_activity')    || '{}'),
       peso:     JSON.parse(localStorage.getItem('nutricion_peso')        || '{}'),
       ejercicio:JSON.parse(localStorage.getItem('nutricion_ejercicio')   || '[]'),
       comp:     JSON.parse(localStorage.getItem('nutricion_composicion') || 'null'),
-      tabla:    JSON.parse(localStorage.getItem('nutricion_tabla')       || '[]'),
       deleted:  JSON.parse(localStorage.getItem('deletedRecetas')        || '[]'),
     };
-
-    sb.from('nutricion').upsert({ id: ROW_ID, data: datos })
+    // Try update first, then insert if not exists
+    sb.from('nutricion')
+      .update({ data: datos })
+      .eq('id', ROW_ID)
       .then(function(res) {
-        guardando = false;
-        if (res.error) { sbStatus('⚠️ Error al guardar', 'rgba(255,180,80,0.9)'); return; }
-        localStorage.setItem('sb_ts', ts);
-        sbStatus('☁️ ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+        if (res.error || (res.data && res.data.length === 0)) {
+          // Row doesn't exist yet, insert it
+          sb.from('nutricion').insert({ id: ROW_ID, data: datos })
+            .then(function(res2) {
+              if (res2.error) {
+                sbStatus('⚠️ ' + (res2.error.message || 'Error'), 'rgba(255,180,80,0.9)');
+                console.error('Supabase insert error:', res2.error);
+              } else {
+                sbStatus('☁️ ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+              }
+            });
+        } else {
+          sbStatus('☁️ ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+        }
       });
   }
 
-  // Hook saveAll
   var _orig = saveAll;
-  saveAll = function() {
-    _orig();
-    sbGuardar();
-  };
+  saveAll = function() { _orig(); sbGuardar(); };
 
-  // Aplicar datos del otro dispositivo
   function aplicarDatos(d) {
     if (d.diary)    { diaryData=d.diary;        localStorage.setItem('nutricion_diary',        JSON.stringify(d.diary)); }
     if (d.activity) { activityData=d.activity;  localStorage.setItem('nutricion_activity',     JSON.stringify(d.activity)); }
@@ -4165,12 +4083,8 @@ renderDiary();
     if (d.comp)     { compData=d.comp;           localStorage.setItem('nutricion_composicion', JSON.stringify(d.comp)); }
     if (d.tabla)    { tablaData=d.tabla;         localStorage.setItem('nutricion_tabla',       JSON.stringify(d.tabla)); }
     if (d.deleted)  { deletedRecetas=new Set(d.deleted); localStorage.setItem('deletedRecetas',JSON.stringify(d.deleted)); }
-
-    // Pesos base siempre presentes
     var pb={'2026-04-16':73.3,'2026-04-23':72.6,'2026-04-30':71.5,'2026-05-07':70.95,'2026-05-15':70.9,'2026-05-21':71.0,'2026-05-28':71.0,'2026-05-29':70.9};
     Object.keys(pb).forEach(function(f){if(!pesoData[f])pesoData[f]=pb[f];});
-
-    // Re-renderizar tab activo
     var active = document.querySelector('.tab-content[style*="block"]');
     if (active) {
       var t = active.id.replace('tab-','');
@@ -4178,28 +4092,22 @@ renderDiary();
         if(t==='diario')      renderDiary();
         if(t==='pesaje')      renderPesaje();
         if(t==='composicion') renderCompTable();
-        if(t==='recetas')     renderRecetas();
-        if(t==='ejercicio')   renderEjercicio();
-        if(t==='tabla')       renderTabla();
       } catch(e){}
     }
   }
 
-  // Escuchar cambios en tiempo real con Supabase Realtime
   sb.channel('nutricion-sync')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'nutricion' }, function(payload) {
+    .on('postgres_changes', {event:'*', schema:'public', table:'nutricion'}, function(payload) {
       var d = payload.new && payload.new.data;
       if (!d || !d.ts) return;
-      var localTs = parseInt(localStorage.getItem('sb_ts') || '0');
-      if (d.ts <= localTs) return; // yo lo guardé, ignorar
-      localStorage.setItem('sb_ts', d.ts);
+      // Si es el eco de lo que YO guardé, ignorar
+      if (Math.abs(d.ts - miTs) < 5000) return;
       sbStatus('🔄 Sincronizando...', 'rgba(245,221,216,0.8)');
       aplicarDatos(d);
       sbStatus('☁️ Sincronizado ✓');
     })
     .subscribe(function(status) {
       if (status === 'SUBSCRIBED') sbStatus('☁️ Conectado', 'rgba(200,245,210,0.9)');
-      else if (status === 'CLOSED') sbStatus('⚠️ Desconectado', 'rgba(255,180,80,0.9)');
     });
 
   sbStatus('⏳ Conectando...', 'rgba(245,221,216,0.5)');
