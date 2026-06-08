@@ -1774,7 +1774,7 @@ canvas { width: 100% !important; }
   </div>
 </div>
 
- src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 // ===== STATE =====
 let currentDateStr = getTodayStr();
@@ -2904,9 +2904,9 @@ let pesajeOverride = {};
 let pesoChart = null;
 
 function getPesoSemana(s) {
-  if (pesajeOverride[s.fecha] !== undefined) return pesajeOverride[s.fecha];
-  if (pesoData[s.fecha] !== undefined) return pesoData[s.fecha];
-  return s.peso;
+  if (pesajeOverride && pesajeOverride[s.fecha] !== undefined) return pesajeOverride[s.fecha];
+  if (pesoData && pesoData[s.fecha] !== undefined) return pesoData[s.fecha];
+  return s.peso; // siempre cae al peso hardcodeado en semanasBase
 }
 
 function renderPesaje() {
@@ -4158,8 +4158,35 @@ renderDiary();
     localStorage.setItem('fb_ts', d.ts);
     if (d.diary)    { diaryData=d.diary;       localStorage.setItem('nutricion_diary',        JSON.stringify(d.diary)); }
     if (d.activity) { activityData=d.activity; localStorage.setItem('nutricion_activity',     JSON.stringify(d.activity)); }
-    if (d.peso)     { pesoData=d.peso;          localStorage.setItem('nutricion_peso',         JSON.stringify(d.peso)); }
+    if (d.peso && Object.keys(d.peso).length > 0) {
+      // Merge: keep existing keys, add new ones from cloud
+      Object.keys(d.peso).forEach(function(k) { pesoData[k] = d.peso[k]; });
+      localStorage.setItem('nutricion_peso', JSON.stringify(pesoData));
+    }
     if (d.ejercicio){ ejercicioData=d.ejercicio;localStorage.setItem('nutricion_ejercicio',    JSON.stringify(d.ejercicio)); }
     if (d.comp)     { compData=d.comp;          localStorage.setItem('nutricion_composicion',  JSON.stringify(d.comp)); }
     if (d.tabla)    { tablaData=d.tabla;         localStorage.setItem('nutricion_tabla',        JSON.stringify(d.tabla)); }
-    if (d.deleted)  { deletedRecet
+    if (d.deleted)  { deletedRecetas=new Set(d.deleted); localStorage.setItem('deletedRecetas',JSON.stringify(d.deleted)); }
+
+    // Restaurar pesos base si Firebase los trajo vacíos
+    var _pb = {'2026-04-16':73.3,'2026-04-23':72.6,'2026-04-30':71.5,'2026-05-07':70.95,'2026-05-15':70.9,'2026-05-21':71.0,'2026-05-28':71.0,'2026-05-29':70.9};
+    Object.keys(_pb).forEach(function(f){ if(!pesoData[f]) pesoData[f]=_pb[f]; });
+    fbStatus('🔄 Actualizando...','rgba(245,221,216,0.8)');
+    setTimeout(function(){
+      var t = (document.querySelector('.tab-content[style*="block"]')||{id:''}).id.replace('tab-','');
+      try {
+        if(t==='diario')      renderDiary();
+        if(t==='pesaje')      renderPesaje();
+        if(t==='composicion') renderCompTable();
+        if(t==='recetas')     renderRecetas();
+        if(t==='ejercicio')   renderEjercicio();
+        if(t==='tabla')       renderTabla();
+      } catch(e){}
+      fbStatus('☁️ Sincronizado ✓');
+    }, 300);
+  });
+
+  fbStatus('⏳ Conectando...','rgba(245,221,216,0.5)');
+</script>
+</body>
+</html>
