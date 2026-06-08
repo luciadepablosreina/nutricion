@@ -4117,51 +4117,54 @@ renderDiary();
   });
 
   var fbRef = firebase.database().ref('lucia');
-  var miId  = Date.now() + '-' + Math.random().toString(36).slice(2);
-  var miTs  = 0;
+  var estoyGuardando = false;
 
   function fbStatus(msg, color) {
     var el = document.getElementById('sync-status');
     if (el) { el.textContent = msg; el.style.color = color || 'rgba(200,245,210,0.9)'; }
   }
 
-  // Cada vez que la app guarda, subir todo a Firebase
+  function fbGuardar() {
+    estoyGuardando = true;
+    var ts = Date.now();
+    fbRef.set({
+      ts:       ts,
+      diary:    JSON.parse(localStorage.getItem('nutricion_diary')       || '{}'),
+      activity: JSON.parse(localStorage.getItem('nutricion_activity')    || '{}'),
+      peso:     JSON.parse(localStorage.getItem('nutricion_peso')        || '{}'),
+      ejercicio:JSON.parse(localStorage.getItem('nutricion_ejercicio')   || '[]'),
+      comp:     JSON.parse(localStorage.getItem('nutricion_composicion') || 'null'),
+      tabla:    JSON.parse(localStorage.getItem('nutricion_tabla')       || '[]'),
+      deleted:  JSON.parse(localStorage.getItem('deletedRecetas')        || '[]'),
+    }).then(function() {
+      localStorage.setItem('fb_ts', ts);
+      fbStatus('☁️ Guardado ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+      setTimeout(function() { estoyGuardando = false; }, 2000);
+    }).catch(function() {
+      estoyGuardando = false;
+      fbStatus('⚠️ Sin conexión', 'rgba(255,180,80,0.9)');
+    });
+  }
+
+  // Hook saveAll
   var _orig = saveAll;
   saveAll = function() {
     _orig();
-    miTs = Date.now();
-    localStorage.setItem('fb_ts', miTs);
-    fbRef.set({
-      id:       miId,
-      ts:       miTs,
-      diary:    JSON.parse(localStorage.getItem('nutricion_diary')        || '{}'),
-      activity: JSON.parse(localStorage.getItem('nutricion_activity')     || '{}'),
-      peso:     JSON.parse(localStorage.getItem('nutricion_peso')         || '{}'),
-      ejercicio:JSON.parse(localStorage.getItem('nutricion_ejercicio')    || '[]'),
-      comp:     JSON.parse(localStorage.getItem('nutricion_composicion')  || 'null'),
-      tabla:    JSON.parse(localStorage.getItem('nutricion_tabla')        || '[]'),
-      deleted:  JSON.parse(localStorage.getItem('deletedRecetas')         || '[]'),
-    }).then(function(){ fbStatus('☁️ Guardado'); })
-      .catch(function(){ fbStatus('⚠️ Sin conexión','rgba(255,180,80,0.9)'); });
+    fbGuardar();
   };
 
-  // Escuchar cambios de OTROS dispositivos
-  fbRef.on('value', function(snap) {
-    var d = snap.val();
-    if (!d) return;
-    // Si fui yo quien guardó, ignorar
-    if (d.id === miId) { fbStatus('☁️ Guardado'); return; }
-    // Si mis datos son más nuevos, ignorar
-    if (d.ts <= parseInt(localStorage.getItem('fb_ts') || '0')) return;
+  // Aplicar datos de la nube
+  function aplicarDatos(d) {
+    var pesoActual = JSON.parse(localStorage.getItem('nutricion_peso') || '{}');
 
-    // Aplicar datos del otro dispositivo
-    localStorage.setItem('fb_ts', d.ts);
-    if (d.diary)    { diaryData=d.diary;       localStorage.setItem('nutricion_diary',        JSON.stringify(d.diary)); }
-    if (d.activity) { activityData=d.activity; localStorage.setItem('nutricion_activity',     JSON.stringify(d.activity)); }
+    if (d.diary)    { diaryData = d.diary;         localStorage.setItem('nutricion_diary',        JSON.stringify(d.diary)); }
+    if (d.activity) { activityData = d.activity;   localStorage.setItem('nutricion_activity',     JSON.stringify(d.activity)); }
     if (d.peso && Object.keys(d.peso).length > 0) {
-      // Merge: keep existing keys, add new ones from cloud
-      Object.keys(d.peso).forEach(function(k) { pesoData[k] = d.peso[k]; });
-      localStorage.setItem('nutricion_peso', JSON.stringify(pesoData));
+      // Merge pesos: no borrar los existentes
+      Object.assign(pesoActual, d.peso);
+      pesoData = pesoActual;
+      localStorage.setItem('nutricion_peso', JSON.stringify(pesoActual));
     }
-    if (d.ejercicio){ ejercicioData=d.ejercicio;localStorage.setItem('nutricion_ejercicio',    JSON.stringify(d.ejercicio)); }
-    if (d.comp)     { compData=d.comp;          
+    if (d.ejercicio){ ejercicioData = d.ejercicio; localStorage.setItem('nutricion_ejercicio',    JSON.stringify(d.ejercicio)); }
+    if (d.comp)     { compData = d.comp;            localStorage.setItem('nutricion_composicion', JSON.stringify(d.comp)); }
+    if (d.tabla)    { tablaData = d.tabla;          localStorage.setItem('nu
