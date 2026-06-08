@@ -1409,8 +1409,6 @@ canvas { width: 100% !important; }
 }
 
 </style>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -4104,30 +4102,31 @@ renderDiary();
 
 
 
-<!-- FIREBASE SYNC -->
+
+
+<!-- SUPABASE SYNC -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  firebase.initializeApp({
-    apiKey: "AIzaSyBDPhGg3OYBoP_mIr-7Ay9GEVllAB0L2Ys",
-    authDomain: "lu-new-e4af4.firebaseapp.com",
-    databaseURL: "https://lu-new-e4af4-default-rtdb.firebaseio.com",
-    projectId: "lu-new-e4af4",
-    storageBucket: "lu-new-e4af4.firebasestorage.app",
-    messagingSenderId: "532161561371",
-    appId: "1:532161561371:web:1549cf402bae27427d49be"
-  });
+(function() {
+  var SUPABASE_URL = 'https://calojntgnrkvkbpugllt.supabase.co';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhbG9qbnRnbnJrdmticHVnbGx0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NDczNjcsImV4cCI6MjA5NjUyMzM2N30.beusb-S_CPm6EJoKTA27tHEJRK5rJidjFkRemCaa5j4';
+  var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  var fbRef = firebase.database().ref('lucia');
-  var estoyGuardando = false;
+  var ROW_ID = 1;
+  var guardando = false;
 
-  function fbStatus(msg, color) {
+  function sbStatus(msg, color) {
     var el = document.getElementById('sync-status');
     if (el) { el.textContent = msg; el.style.color = color || 'rgba(200,245,210,0.9)'; }
   }
 
-  function fbGuardar() {
-    estoyGuardando = true;
+  // Guardar datos en Supabase
+  function sbGuardar() {
+    if (guardando) return;
+    guardando = true;
     var ts = Date.now();
-    fbRef.set({
+    var datos = {
+      id:       ROW_ID,
       ts:       ts,
       diary:    JSON.parse(localStorage.getItem('nutricion_diary')       || '{}'),
       activity: JSON.parse(localStorage.getItem('nutricion_activity')    || '{}'),
@@ -4136,35 +4135,75 @@ renderDiary();
       comp:     JSON.parse(localStorage.getItem('nutricion_composicion') || 'null'),
       tabla:    JSON.parse(localStorage.getItem('nutricion_tabla')       || '[]'),
       deleted:  JSON.parse(localStorage.getItem('deletedRecetas')        || '[]'),
-    }).then(function() {
-      localStorage.setItem('fb_ts', ts);
-      fbStatus('☁️ Guardado ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
-      setTimeout(function() { estoyGuardando = false; }, 2000);
-    }).catch(function() {
-      estoyGuardando = false;
-      fbStatus('⚠️ Sin conexión', 'rgba(255,180,80,0.9)');
-    });
+    };
+
+    sb.from('nutricion').upsert({ id: ROW_ID, data: datos })
+      .then(function(res) {
+        guardando = false;
+        if (res.error) { sbStatus('⚠️ Error al guardar', 'rgba(255,180,80,0.9)'); return; }
+        localStorage.setItem('sb_ts', ts);
+        sbStatus('☁️ ' + new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+      });
   }
 
   // Hook saveAll
   var _orig = saveAll;
   saveAll = function() {
     _orig();
-    fbGuardar();
+    sbGuardar();
   };
 
-  // Aplicar datos de la nube
+  // Aplicar datos del otro dispositivo
   function aplicarDatos(d) {
-    var pesoActual = JSON.parse(localStorage.getItem('nutricion_peso') || '{}');
-
-    if (d.diary)    { diaryData = d.diary;         localStorage.setItem('nutricion_diary',        JSON.stringify(d.diary)); }
-    if (d.activity) { activityData = d.activity;   localStorage.setItem('nutricion_activity',     JSON.stringify(d.activity)); }
-    if (d.peso && Object.keys(d.peso).length > 0) {
-      // Merge pesos: no borrar los existentes
-      Object.assign(pesoActual, d.peso);
-      pesoData = pesoActual;
-      localStorage.setItem('nutricion_peso', JSON.stringify(pesoActual));
+    if (d.diary)    { diaryData=d.diary;        localStorage.setItem('nutricion_diary',        JSON.stringify(d.diary)); }
+    if (d.activity) { activityData=d.activity;  localStorage.setItem('nutricion_activity',     JSON.stringify(d.activity)); }
+    if (d.peso && Object.keys(d.peso).length>0) {
+      Object.assign(pesoData, d.peso);
+      localStorage.setItem('nutricion_peso', JSON.stringify(pesoData));
     }
-    if (d.ejercicio){ ejercicioData = d.ejercicio; localStorage.setItem('nutricion_ejercicio',    JSON.stringify(d.ejercicio)); }
-    if (d.comp)     { compData = d.comp;            localStorage.setItem('nutricion_composicion', JSON.stringify(d.comp)); }
-    if (d.tabla)    { tablaData = d.tabla;          localStorage.setItem('nu
+    if (d.ejercicio){ ejercicioData=d.ejercicio; localStorage.setItem('nutricion_ejercicio',   JSON.stringify(d.ejercicio)); }
+    if (d.comp)     { compData=d.comp;           localStorage.setItem('nutricion_composicion', JSON.stringify(d.comp)); }
+    if (d.tabla)    { tablaData=d.tabla;         localStorage.setItem('nutricion_tabla',       JSON.stringify(d.tabla)); }
+    if (d.deleted)  { deletedRecetas=new Set(d.deleted); localStorage.setItem('deletedRecetas',JSON.stringify(d.deleted)); }
+
+    // Pesos base siempre presentes
+    var pb={'2026-04-16':73.3,'2026-04-23':72.6,'2026-04-30':71.5,'2026-05-07':70.95,'2026-05-15':70.9,'2026-05-21':71.0,'2026-05-28':71.0,'2026-05-29':70.9};
+    Object.keys(pb).forEach(function(f){if(!pesoData[f])pesoData[f]=pb[f];});
+
+    // Re-renderizar tab activo
+    var active = document.querySelector('.tab-content[style*="block"]');
+    if (active) {
+      var t = active.id.replace('tab-','');
+      try {
+        if(t==='diario')      renderDiary();
+        if(t==='pesaje')      renderPesaje();
+        if(t==='composicion') renderCompTable();
+        if(t==='recetas')     renderRecetas();
+        if(t==='ejercicio')   renderEjercicio();
+        if(t==='tabla')       renderTabla();
+      } catch(e){}
+    }
+  }
+
+  // Escuchar cambios en tiempo real con Supabase Realtime
+  sb.channel('nutricion-sync')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'nutricion' }, function(payload) {
+      var d = payload.new && payload.new.data;
+      if (!d || !d.ts) return;
+      var localTs = parseInt(localStorage.getItem('sb_ts') || '0');
+      if (d.ts <= localTs) return; // yo lo guardé, ignorar
+      localStorage.setItem('sb_ts', d.ts);
+      sbStatus('🔄 Sincronizando...', 'rgba(245,221,216,0.8)');
+      aplicarDatos(d);
+      sbStatus('☁️ Sincronizado ✓');
+    })
+    .subscribe(function(status) {
+      if (status === 'SUBSCRIBED') sbStatus('☁️ Conectado', 'rgba(200,245,210,0.9)');
+      else if (status === 'CLOSED') sbStatus('⚠️ Desconectado', 'rgba(255,180,80,0.9)');
+    });
+
+  sbStatus('⏳ Conectando...', 'rgba(245,221,216,0.5)');
+})();
+</script>
+</body>
+</html>
